@@ -1,0 +1,8 @@
+*.core
+*.dat
+*.fasl
+system-index.txt
+tmp.lisp
+tmp*.lisp
+*.tmp
+tmp.txt

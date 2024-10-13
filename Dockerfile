@@ -1,6 +1,6 @@
 # This image is only intended to run the tests
 
-FROM ubuntu:23.10 AS base
+FROM ubuntu:24.04 AS base
 
 RUN apt-get -qq update &&\
     apt-get -qq install -y sbcl curl gcc git
@@ -21,12 +21,14 @@ RUN apt-get -qq remove curl -y &&\
 from base AS build
 
 WORKDIR /opt
-ADD bin quicklisp/local-projects/evl/bin
 ADD src quicklisp/local-projects/evl/src
 ADD test quicklisp/local-projects/evl/test
 ADD evl.asd quicklisp/local-projects/evl
 ADD run-tests.sh quicklisp/local-projects/evl/run-tests.sh
 RUN mkdir -p ~/quicklisp/ && ln -s  /opt/quicklisp/setup.lisp ~/quicklisp/setup.lisp
+
+RUN git clone https://github.com/inconvergent/cl-veq.git quicklisp/local-projects/veq
+RUN git clone https://github.com/inconvergent/lqn.git quicklisp/local-projects/lqn
 
 WORKDIR /opt/quicklisp/local-projects/evl/
 
