@@ -1,4 +1,4 @@
-(in-package :evl)
+(in-package :stm)
 
 (defmacro abbrev (short long) `(defmacro ,short (&rest args) `(,',long ,@args)))
 (defmacro ~ (&rest rest) "wraps rest in (mvc #'values ...)."
@@ -18,8 +18,8 @@ almost like multiple-value-list, except it handles multiple arguments."
 (abbrev dsb destructuring-bind)
 
 (defun v? (&optional (silent t)
-           &aux (v (slot-value (asdf:find-system 'evl) 'asdf:version)))
-  "return/print evl version." (unless silent (format t "~&EVL version: ~a~%." v)) v)
+           &aux (v (slot-value (asdf:find-system 'stm) 'asdf:version)))
+  "return/print STM version." (unless silent (format t "~&STM version: ~a~%." v)) v)
 
 (defun flatten (x)
   (declare (optimize (speed 3)) (list x))
@@ -41,7 +41,4 @@ almost like multiple-value-list, except it handles multiple arguments."
        s d))
 
 (defmacro lmb (&rest rest) "alias for lambda" `(lambda ,@rest))
-(defmacro later (expr)
-  "wrap expression in (lambda () ...)."
-  `(lambda () ,expr))
 

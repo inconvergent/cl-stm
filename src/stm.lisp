@@ -1,26 +1,65 @@
 (in-package #:stm)
 
-(declaim (function *act*))
-; (defvar *act* #'(lambda (s) (lqn:out "~&(identity:~a)~&" s)))
-(defvar *act* #'identity "override function used to process values. eg. #'print")
-; (defvar _  nil)
+(declaim (inline r/identity r/cons r/print r/print*))
 
 (defmacro later (expr)
   "wrap expression in (lambda () ...) to evaluate later."
   `(lambda () ,expr))
 
-(defun make-rule-label (rule-name arg rule-expr)
+(defun r/identity (v rule)
+  (declare (optimize speed) (ignore rule) (keyword rule))
+  "default function for act / *act*."
+  v)
+
+(defun r/cons (v rule res)
+  (declare (optimize speed) (ignore rule) (keyword rule))
+  "default function for acc."
+  (cons v res))
+
+(defun r/print (v rule)
+  (declare (optimize speed) (ignore rule) (keyword rule))
+  "print rule and value. return v."
+  (format t "~&~a~&" v) v)
+
+(defun r/print* (v rule)
+  (declare (optimize speed) (keyword rule))
+  "print rule and value. return v."
+  (format t "~&; {~a}: ~a~&" rule v) v)
+
+(declaim (function *act*))
+(defvar *act* #'r/identity
+  "function that is called for each iteration. requires
+two arguments. the first argument is the value. must return the desired return
+value for each iteration.
+the second is the (keyword) name of the current rule.")
+
+; TODO: until state
+
+(defun replace-rule-placeholder (name expr) ; TODO: broken
+  (lqn:qry expr (?txpr (equal _ '?_) (kw! name))))
+
+(defmacro stx/lambda ((name arg vfx) &body expr)
+  (stm::with-gensyms (v nxt act)
+    `(lambda (&optional ,act) ; stx
+       (multiple-value-bind (,v ,nxt) ; current val, next stx
+         (funcall (lambda (,arg) ,@expr) (funcall ,vfx))
+         (cond ((and ,nxt (functionp ,nxt))
+                (values ,nxt #1=(funcall (the function (or ,act *act*)) ,v
+                                         ,(lqn:kw! name)
+                                         )))
+               (,nxt (values nil #1#)) ; last value, no more stx
+               (t (values nil nil))))))) ; fin
+
+(defun make-rule-label (name arg expr)
   "create rule label with name, argument and rule/condition."
-  (declare (symbol rule-name arg))
-  `((,rule-name (val-fx &aux (_ ,(lqn:kw! rule-name)))
-       (declare (ignorable _) (function val-fx))
-       (lambda (&optional act) ; make stx
-         (multiple-value-bind (val nxt) ; current val, next stx
-             (funcall (lambda (,arg) ,rule-expr) (funcall val-fx))
-           (cond ((and nxt (functionp nxt))
-                  (values nxt #1=(funcall (the function (or act *act*)) val)))
-                 (nxt (values nil #1#)) ; last value, no more stx
-                 (t (values nil nil)))))))) ; fin
+  (declare (symbol name arg))
+  (stm::with-gensyms (vfx)
+    `((,name (,vfx)
+       (declare (function ,vfx))
+       (stx/lambda (,name ,arg ,vfx)
+        ,(replace-rule-placeholder name expr))))))
+
+  ; (lambda (v rule res) (cons v res))
 
 (defmacro with-rules (rules &body body)
   (declare (list rules))
@@ -39,29 +78,35 @@ see iterators and accumulators:
   - acc/all acc/n acc/until
   - itr/all itr/n itr/until
 
-all iterators and accumulators accept an act function of one argument which is
-  called on each value before it is returned. default: #'identity.
-  ; note: to override for the entire context set: evl:*act*.
+all iterators and accumulators use the act function to process each value
+  before it is returned. the default is:
 
-all accumulators accept an acc and a res option.
-  - acc is a function that accepts a value and an accumulated value, then returns
-    the new accumualted value. default: #'cons.
+  ; (lambda (v rule) v) ; aka #'r/identity, which just returns the value.
 
-    ; note: you can write your own function to filter out values. eg:
-    ; (lambda (v res)
-    ;    (if (my-testp v) (cons v res) res))
+  NOTE: also see r/print and r/print*, which are useful for development.
+  NOTE: to override for the entire context set: stm:*act*.
+
+all accumulators also have an acc and a res option:
+  - acc is used for accumulation. the default is
+
+    ; (lambda (v rule res) (cons v res)) ; aka. #'r/cons
+
+    NOTE: you can filter which values are accumulated like this:
+
+    ; (lambda (v rule res)
+    ;   (if (my-testp rule v) (cons v res) res))
 
   - res is the initial value of the accumulation. default: (list).
     res does not have to be a list, but if you override you have to override
     acc to be compatible and vice-versa.
-" `(labels (,@(mapcan (lambda (o) (apply #'make-rule-label o)) rules))
+" `(labels (,@(mapcan (lambda (o) (apply #'make-rule-label o))
+                      rules))
      ,@body))
 
-
-(defmacro new (rule-name val-expr)
-  (declare (symbol rule-name))
+(defmacro new (name expr)
+  (declare (symbol name))
   "new state with this rule and expression. see with-rules."
-  `(,rule-name (later ,val-expr)))
+  `(,name (later ,(replace-rule-placeholder name expr))))
 (defmacro ? (&rest rest) "alias for new." `(new ,@rest))
 
 

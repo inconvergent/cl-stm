@@ -21,15 +21,14 @@ RUN apt-get -qq remove curl -y &&\
 from base AS build
 
 WORKDIR /opt
-ADD src quicklisp/local-projects/evl/src
-ADD test quicklisp/local-projects/evl/test
-ADD evl.asd quicklisp/local-projects/evl
-ADD run-tests.sh quicklisp/local-projects/evl/run-tests.sh
+ADD src quicklisp/local-projects/stm/src
+ADD test quicklisp/local-projects/stm/test
+ADD stm.asd quicklisp/local-projects/stm
+ADD run-tests.sh quicklisp/local-projects/stm/run-tests.sh
 RUN mkdir -p ~/quicklisp/ && ln -s  /opt/quicklisp/setup.lisp ~/quicklisp/setup.lisp
 
-RUN git clone https://github.com/inconvergent/cl-veq.git quicklisp/local-projects/veq
 RUN git clone https://github.com/inconvergent/lqn.git quicklisp/local-projects/lqn
 
-WORKDIR /opt/quicklisp/local-projects/evl/
+WORKDIR /opt/quicklisp/local-projects/stm/
 
 CMD ["bash", "./run-tests.sh"]

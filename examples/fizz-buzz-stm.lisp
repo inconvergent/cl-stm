@@ -1,6 +1,6 @@
 (load "~/quicklisp/setup.lisp")
 
-(ql:quickload :evl)
+(ql:quickload :stm)
 (in-package :stm)
 
 ; infinite fizzbuzz state machine
@@ -12,7 +12,7 @@
                 (#2# :buzz)
                 (t i))))
 
-(defun fizz-print (s)
+(defun fizz-print (s &rest rest)
   (typecase #4=(second s)
             (number (lqn:out " ~a" #4#))
             (t (lqn:out "~%~a" #4#))))
@@ -29,16 +29,17 @@
       (itr/n sm10 20 #'fizz-print)
 
       ; initiate an eternal state of fizzbuzz:
-      ; (itr/all sm10 #'fizz-print) ; start at your own risk
+      ; (itr/all sm10 #'fizz-print)
       ))
 
   (with-rules ((ping l (values l (? pong (list (1+ (cadr l)) :pong))))
                (pong l (values l (? ping (list :ping (1+ (car l)))))))
 
-    (let* ((sm (? ping `(:ping 0)))
-           (sm10 (itr/n sm 3 #'print)))
+    (let* ((sm (? ping (list :ping 0)))
+           (sm10 (itr/n sm 3 #'r/print*)))
 
-      (lqn:out :----) (itr/n sm10 11 #'print))))
+      (lqn:out :----)
+      (itr/n sm10 11 #'r/print*))))
 
 (time (main))
 

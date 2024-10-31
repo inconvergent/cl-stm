@@ -5,9 +5,13 @@
  ; 
  ; *ACT* names a special variable:
  ;   Declared type: FUNCTION
- ;   Value: #<FUNCTION IDENTITY>
+ ;   Value: #<FUNCTION R/IDENTITY>
  ;   Documentation:
- ;     override function used to process values. eg. #'print
+ ;     function that is called for each iteration. requires
+ ;     two arguments. the first argument is the value. must return the desired return
+ ;     value for each iteration.
+ ;     the second is the (keyword) name of the current rule.
+ ; 
 ```
 
 ## `stm:?`
@@ -19,7 +23,8 @@
  ;   Lambda-list: (&REST REST)
  ;   Documentation:
  ;     alias for new.
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 
 ## `stm:acc/all`
@@ -33,7 +38,8 @@
  ;                  (VALUES NULL T &OPTIONAL))
  ;   Documentation:
  ;     accumulate all. see with-rules.
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 
 ## `stm:acc/n`
@@ -47,7 +53,8 @@
  ;                  (VALUES T T &OPTIONAL))
  ;   Documentation:
  ;     accumulate at most n times. see with-rules.
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 
 ## `stm:acc/until`
@@ -62,7 +69,8 @@
  ;                  (VALUES (OR NULL FUNCTION) T &OPTIONAL))
  ;   Documentation:
  ;     accumulate until. see with-rules.
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 
 ## `stm:itr/all`
@@ -75,7 +83,8 @@
  ;   Derived type: (FUNCTION (T &OPTIONAL T T) *)
  ;   Documentation:
  ;     iterate all. see with-rules.
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 
 ## `stm:itr/n`
@@ -88,7 +97,8 @@
  ;   Derived type: (FUNCTION (T &OPTIONAL FIXNUM T T) *)
  ;   Documentation:
  ;     iterate at most n times. see with-rules.
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 
 ## `stm:itr/until`
@@ -101,7 +111,8 @@
  ;   Derived type: (FUNCTION (T &OPTIONAL FUNCTION T T) *)
  ;   Documentation:
  ;     iterate until. see with-rules.
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 
 ## `stm:later`
@@ -113,7 +124,8 @@
  ;   Lambda-list: (EXPR)
  ;   Documentation:
  ;     wrap expression in (lambda () ...) to evaluate later.
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 
 ## `stm:new`
@@ -122,10 +134,56 @@
  ;   [symbol]
  ; 
  ; NEW names a macro:
- ;   Lambda-list: (RULE-NAME VAL-EXPR)
+ ;   Lambda-list: (NAME EXPR)
  ;   Documentation:
  ;     new state with this rule and expression. see with-rules.
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
+```
+
+## `stm:r/identity`
+```
+ ; STM:R/IDENTITY
+ ;   [symbol]
+ ; 
+ ; R/IDENTITY names a compiled function:
+ ;   Lambda-list: (V RULE)
+ ;   Derived type: (FUNCTION (T KEYWORD) (VALUES T &OPTIONAL))
+ ;   Documentation:
+ ;     default function for act / *act*.
+ ;   Inline proclamation: INLINE (inline expansion available)
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
+```
+
+## `stm:r/print`
+```
+ ; STM:R/PRINT
+ ;   [symbol]
+ ; 
+ ; R/PRINT names a compiled function:
+ ;   Lambda-list: (V RULE)
+ ;   Derived type: (FUNCTION (T KEYWORD) (VALUES T &OPTIONAL))
+ ;   Documentation:
+ ;     print rule and value. return v.
+ ;   Inline proclamation: INLINE (inline expansion available)
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
+```
+
+## `stm:r/print*`
+```
+ ; STM:R/PRINT*
+ ;   [symbol]
+ ; 
+ ; R/PRINT* names a compiled function:
+ ;   Lambda-list: (V RULE)
+ ;   Derived type: (FUNCTION (T KEYWORD) (VALUES T &OPTIONAL))
+ ;   Documentation:
+ ;     print rule and value. return v.
+ ;   Inline proclamation: INLINE (inline expansion available)
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 
 ## `stm:with-rules`
@@ -151,22 +209,29 @@
  ;       - acc/all acc/n acc/until
  ;       - itr/all itr/n itr/until
  ;     
- ;     all iterators and accumulators accept an act function of one argument which is
- ;       called on each value before it is returned. default: #'identity.
- ;       ; note: to override for the entire context set: evl:*act*.
+ ;     all iterators and accumulators use the act function to process each value
+ ;       before it is returned. the default is:
  ;     
- ;     all accumulators accept an acc and a res option.
- ;       - acc is a function that accepts a value and an accumulated value, then returns
- ;         the new accumualted value. default: #'cons.
+ ;       ; (lambda (v rule) v) ; aka #'r/identity, which just returns the value.
  ;     
- ;         ; note: you can write your own function to filter out values. eg:
- ;         ; (lambda (v res)
- ;         ;    (if (my-testp v) (cons v res) res))
+ ;       NOTE: also see r/print and r/print*, which are useful for development.
+ ;       NOTE: to override for the entire context set: stm:*act*.
+ ;     
+ ;     all accumulators also have an acc and a res option:
+ ;       - acc is used for accumulation. the default is
+ ;     
+ ;         ; (lambda (v rule res) (cons v res)) ; aka. #'r/cons
+ ;     
+ ;         NOTE: you can filter which values are accumulated like this:
+ ;     
+ ;         ; (lambda (v rule res)
+ ;         ;   (if (my-testp rule v) (cons v res) res))
  ;     
  ;       - res is the initial value of the accumulation. default: (list).
  ;         res does not have to be a list, but if you override you have to override
  ;         acc to be compatible and vice-versa.
  ; 
- ;   Source file: /data/x/evl/src/stm.lisp
+ ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
 ```
 

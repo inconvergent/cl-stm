@@ -1,4 +1,4 @@
-(in-package :evl)
+(in-package :stm)
 
 ; (declaim (list *docstring-map*))
 (defvar *docstring-map* (list))
@@ -7,9 +7,10 @@
 (defun -strsrt (l) (sort l #'string-lessp :key #'car))
 
 (defun desc (sym) (declare (symbol sym))
-  (apply #'lqn:str! (mapcar (lambda (s) (format nil " ; ~a~%" s))
-                            (butlast (veq::split-string #\Newline ; use lqn
-                                        (-outstr (describe sym)))))))
+  (lqn:qry (lqn:stdstr (describe sym))
+           (splt _ (str! #\Newline) nil nil)
+           #((fmt " ; ~a~%" _))
+           (apply* strcat _)))
 (defun docstrings (sym) (declare (symbol sym))
   (apply #'lqn:str! (mapcar (lambda (o) (lqn:str! o #\Newline))
                             (remove-if-not #'identity

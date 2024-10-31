@@ -5,22 +5,20 @@ SBCL is free software, provided as is, with absolutely no warranty.
 It is mostly in the public domain; some portions are provided under
 BSD-style licenses.  See the CREDITS and COPYING files in the
 distribution for more information.
-To load "evl":
+To load "stm":
   Load 1 ASDF system:
-    evl
-; Loading "evl"
-; compiling file "/data/x/evl/src/packages.lisp" (written 30 OCT 2024 02:53:10 PM):
-[package stm].....................................
-[package evl].....................................
-[package evl/code]
+    stm
+; Loading "stm"
+; compiling file "/data/x/stm/src/packages.lisp" (written 01 NOV 2024 09:43:33 AM):
+[package stm]
 
-; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/evl/src/packages-tmpGHU3ALSV.fasl
+; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/packages-tmpGHU3ALSV.fasl
 ; compilation finished in 0:00:00.001
-; compiling file "/data/x/evl/src/utils.lisp" (written 30 OCT 2024 02:57:11 PM):
+; compiling file "/data/x/stm/src/utils.lisp" (written 01 NOV 2024 09:43:33 AM):
 .
-; file: /data/x/evl/src/utils.lisp
+; file: /data/x/stm/src/utils.lisp
 ; in: DEFUN MATCH-PREF
-;     (STRING= EVL::PREF EVL::S :END2 (LENGTH EVL::PREF))
+;     (STRING= STM::PREF STM::S :END2 (LENGTH STM::PREF))
 ; 
 ; note: unable to
 ;   optimize
@@ -35,60 +33,34 @@ To load "evl":
 ;   The second argument is a STRING, not a (SIMPLE-ARRAY CHARACTER (*)).
 
 
-; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/evl/src/utils-tmpAAURSO1.fasl
-; compilation finished in 0:00:00.015
-; compiling file "/data/x/evl/src/docs.lisp" (written 30 OCT 2024 02:48:18 PM):
+; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/utils-tmpAAURSO1.fasl
+; compilation finished in 0:00:00.014
+; compiling file "/data/x/stm/src/docs.lisp" (written 01 NOV 2024 10:22:55 AM):
 .
-; file: /data/x/evl/src/docs.lisp
+; file: /data/x/stm/src/docs.lisp
 ; in: DEFVAR *DOCSTRING-MAP*
 ;     (LIST)
 ; 
 ; note: deleting unreachable code
 
 
-; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/evl/src/docs-tmp5GEXGEG5.fasl
-; compilation finished in 0:00:00.013
-; compiling file "/data/x/evl/src/config.lisp" (written 30 OCT 2024 10:24:03 AM):
-
-; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/evl/src/config-tmpAR3FSGEY.fasl
-; compilation finished in 0:00:00.009
-; compiling file "/data/x/evl/src/stm.lisp" (written 31 OCT 2024 01:08:07 PM):
+; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/docs-tmp5GEXGEG5.fasl
+; compilation finished in 0:00:00.017
+; compiling file "/data/x/stm/src/stm.lisp" (written 01 NOV 2024 09:43:33 AM):
 .
 
-; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/evl/src/stm-tmpJAIDFZTC.fasl
-; compilation finished in 0:00:00.013
-; compiling file "/data/x/evl/src/interp.lisp" (written 30 OCT 2024 02:46:45 PM):
-...
-
-; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/evl/src/interp-tmp8V3J6PE9.fasl
-; compilation finished in 0:00:00.096
-; compiling file "/data/x/evl/src/code-factory.lisp" (written 29 OCT 2024 11:55:51 PM):
-
-; file: /data/x/evl/src/code-factory.lisp
-; in: DEFUN GEN
-;     (COND
-;      ((AND (LISTP EVL/CODE::V) (> (LENGTH EVL/CODE::V) 1))
-;       `(VALUES ,@EVL/CODE::V))
-;      ((LISTP EVL/CODE::V) (CAR EVL/CODE::V)) (T EVL/CODE::V))
-; --> IF THE 
-; ==>
-;   EVL/CODE::V
-; 
-; note: deleting unreachable code
-
-
-; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/evl/src/code-factory-tmp9V47YWQF.fasl
-; compilation finished in 0:00:00.010
+; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/stm-tmpAR3FSGEY.fasl
+; compilation finished in 0:00:00.024
 ; 
 ; compilation unit finished
-;   printed 4 notes
+;   printed 3 notes
 
 Evaluation took:
-  0.237 seconds of real time
-  0.237635 seconds of total run time (0.176788 user, 0.060847 system)
-  100.42% CPU
-  697 forms interpreted
-  1,087 lambdas converted
-  1,009,900,810 processor cycles
-  80,360,720 bytes consed
+  0.108 seconds of real time
+  0.109434 seconds of total run time (0.085268 user, 0.024166 system)
+  100.93% CPU
+  448 forms interpreted
+  691 lambdas converted
+  465,106,698 processor cycles
+  36,795,936 bytes consed
   
