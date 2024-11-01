@@ -41,14 +41,13 @@ the second is the (keyword) name of the current rule.")
 (defmacro stx/lambda ((name arg vfx) &body expr)
   (stm::with-gensyms (v nxt act)
     `(lambda (&optional ,act) ; stx
-       (multiple-value-bind (,v ,nxt) ; current val, next stx
-         (funcall (lambda (,arg) ,@expr) (funcall ,vfx))
-         (cond ((and ,nxt (functionp ,nxt))
-                (values ,nxt #1=(funcall (the function (or ,act *act*)) ,v
-                                         ,(lqn:kw! name)
-                                         )))
-               (,nxt (values nil #1#)) ; last value, no more stx
-               (t (values nil nil))))))) ; fin
+       (let ((,arg (funcall ,vfx)))
+         (multiple-value-bind (,v ,nxt) (progn ,@expr) ; expr returns v, nxt
+           (cond ((and ,nxt (functionp ,nxt))
+                  (values ,nxt #1=(funcall (the function (or ,act *act*)) ,v
+                                           ,(lqn:kw! name))))
+                 (,nxt (values nil #1#)) ; last value, no more stx
+                 (t (values nil nil)))))))) ; fin
 
 (defun make-rule-label (name arg expr)
   "create rule label with name, argument and rule/condition."
@@ -131,7 +130,7 @@ all accumulators also have an acc and a res option:
   (if stx (multiple-value-bind (nxt val) (funcall (the function stx) act)
                (if (not (funcall until val))
                    (acc/until nxt until acc act (funcall acc val res))
-                   (values stx (funcall acc val res))))
+                   (values nxt (funcall acc val res))))
           (values nil res)))
 
 

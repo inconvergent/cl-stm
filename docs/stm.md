@@ -66,7 +66,7 @@
  ;   Lambda-list: (STX &OPTIONAL (UNTIL (FUNCTION IDENTITY))
  ;                 (ACC (FUNCTION CONS)) ACT RES)
  ;   Derived type: (FUNCTION (T &OPTIONAL FUNCTION FUNCTION T T)
- ;                  (VALUES (OR NULL FUNCTION) T &OPTIONAL))
+ ;                  (VALUES T T &OPTIONAL))
  ;   Documentation:
  ;     accumulate until. see with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp

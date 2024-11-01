@@ -26,8 +26,8 @@
         (mvb (g v) (stm:itr/n (stm:itr/n gg 10) 3)
              (is (list (functionp g) v) '(t 12)))
 
-        (mvb (g v) (stm:itr/n (stm:itr/until gg (lambda (i) (= i 10))) 2)
-             (is (list (functionp g) v) '(t 11)))))
+        (mvb (g v) (stm:itr/n (stm:itr/until gg (lambda (i) (= i 3))) 2)
+             (is (list (functionp g) v) '(t 5)))))
 
    (stm:with-rules
     ((rx i (values i (stm:new rx (progn (princ :/exec->) (1+ i))))))
@@ -61,9 +61,9 @@
      (is (mvl (stm:acc/all gg #'cons (lambda (s r) (declare (ignore r))
                                        (lqn:fmt "~a/" s))))
          '(nil ("4/" "3/" "2/" "1/" "0/")))
-     (is (mvb (g* val) (stm:acc/until gg (lambda (o) (> o 3)))
+     (is (mvb (g* val) (stm:acc/until gg (lambda (o) (> o 2)))
               (list val (functionp g*)))
-         '((4 3 2 1 0) T)))))
+         '((3 2 1 0) T)))))
 
 (defun which? (i)
   (list i (cond ((and #1=(zerop (mod i 3))

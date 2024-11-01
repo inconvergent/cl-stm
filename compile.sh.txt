@@ -9,33 +9,16 @@ To load "stm":
   Load 1 ASDF system:
     stm
 ; Loading "stm"
-; compiling file "/data/x/stm/src/packages.lisp" (written 01 NOV 2024 09:43:33 AM):
+; compiling file "/data/x/stm/src/packages.lisp" (written 01 NOV 2024 10:24:21 AM):
 [package stm]
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/packages-tmpGHU3ALSV.fasl
-; compilation finished in 0:00:00.001
-; compiling file "/data/x/stm/src/utils.lisp" (written 01 NOV 2024 09:43:33 AM):
-.
-; file: /data/x/stm/src/utils.lisp
-; in: DEFUN MATCH-PREF
-;     (STRING= STM::PREF STM::S :END2 (LENGTH STM::PREF))
-; 
-; note: unable to
-;   optimize
-; due to type uncertainty:
-;   The first argument is a STRING, not a SIMPLE-BASE-STRING.
-;   The second argument is a STRING, not a SIMPLE-BASE-STRING.
-; 
-; note: unable to
-;   optimize
-; due to type uncertainty:
-;   The first argument is a STRING, not a (SIMPLE-ARRAY CHARACTER (*)).
-;   The second argument is a STRING, not a (SIMPLE-ARRAY CHARACTER (*)).
-
+; compilation finished in 0:00:00.000
+; compiling file "/data/x/stm/src/utils.lisp" (written 01 NOV 2024 10:55:16 AM):
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/utils-tmpAAURSO1.fasl
-; compilation finished in 0:00:00.014
-; compiling file "/data/x/stm/src/docs.lisp" (written 01 NOV 2024 10:22:55 AM):
+; compilation finished in 0:00:00.008
+; compiling file "/data/x/stm/src/docs.lisp" (written 01 NOV 2024 10:24:21 AM):
 .
 ; file: /data/x/stm/src/docs.lisp
 ; in: DEFVAR *DOCSTRING-MAP*
@@ -45,22 +28,22 @@ To load "stm":
 
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/docs-tmp5GEXGEG5.fasl
-; compilation finished in 0:00:00.017
-; compiling file "/data/x/stm/src/stm.lisp" (written 01 NOV 2024 09:43:33 AM):
-.
+; compilation finished in 0:00:00.018
+; compiling file "/data/x/stm/src/stm.lisp" (written 01 NOV 2024 10:26:17 PM):
+..
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/stm-tmpAR3FSGEY.fasl
-; compilation finished in 0:00:00.024
+; compilation finished in 0:00:00.023
 ; 
 ; compilation unit finished
-;   printed 3 notes
+;   printed 1 note
 
 Evaluation took:
-  0.108 seconds of real time
-  0.109434 seconds of total run time (0.085268 user, 0.024166 system)
-  100.93% CPU
-  448 forms interpreted
-  691 lambdas converted
-  465,106,698 processor cycles
-  36,795,936 bytes consed
+  0.103 seconds of real time
+  0.103682 seconds of total run time (0.072793 user, 0.030889 system)
+  100.97% CPU
+  400 forms interpreted
+  641 lambdas converted
+  440,622,107 processor cycles
+  34,629,024 bytes consed
   
