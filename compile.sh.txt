@@ -9,68 +9,21 @@ To load "stm":
   Load 1 ASDF system:
     stm
 ; Loading "stm"
-; compiling file "/data/x/stm/src/packages.lisp" (written 02 NOV 2024 10:19:07 AM):
+; compiling file "/data/x/stm/src/packages.lisp" (written 03 NOV 2024 02:41:05 PM):
 [package stm]
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/packages-tmpGHU3ALSV.fasl
 ; compilation finished in 0:00:00.001
-; compiling file "/data/x/stm/src/utils.lisp" (written 02 NOV 2024 10:18:54 AM):
+; compiling file "/data/x/stm/src/utils.lisp" (written 03 NOV 2024 02:41:05 PM):
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/utils-tmpAAURSO1.fasl
-; compilation finished in 0:00:00.010
-; compiling file "/data/x/stm/src/config.lisp" (written 02 NOV 2024 10:07:49 AM):
+; compilation finished in 0:00:00.009
+; compiling file "/data/x/stm/src/config.lisp" (written 03 NOV 2024 02:47:42 PM):
 .
-; file: /data/x/stm/src/config.lisp
-; in: DEFMACRO ERR/CTX-HANDLE
-;     (DEFMACRO STM::ERR/CTX-HANDLE (STM::EXPR &BODY STM::BODY)
-;       (STM::WITH-GENSYMS (STM::E)
-;         `(HANDLER-CASE (PROGN ,@STM::BODY)
-;                        (STM::ITR-HALT (,STM::E) (WARN "aaaa: ~a///" ,STM::E)))))
-; --> EVAL-WHEN SB-C::%DEFMACRO SB-INT:NAMED-LAMBDA SB-INT:NAMED-DS-BIND 
-; --> SB-INT:BINDING* 
-; ==>
-;   (LET* ((#:G0
-;           (SB-C::CHECK-DS-LIST/&REST (CDR #:EXPR) 1 1
-;                                      '(# STM::EXPR &BODY STM::BODY)))
-;          (STM::EXPR (POP #:G0))
-;          (STM::BODY #:G0))
-;     (DECLARE (SB-C::CONSTANT-VALUE STM::EXPR STM::BODY))
-;     (BLOCK STM::ERR/CTX-HANDLE
-;       (STM::WITH-GENSYMS (STM::E)
-;         `(HANDLER-CASE (PROGN ,@STM::BODY) (STM::ITR-HALT # #)))))
-; 
-; caught STYLE-WARNING:
-;   The variable EXPR is defined but never used.
-
-; file: /data/x/stm/src/config.lisp
-; in: DEFMACRO ERR/CTX-HANDLE
-;     (DEFMACRO STM::ERR/CTX-HANDLE (STM::EXPR &BODY STM::BODY)
-;       (STM::WITH-GENSYMS (STM::E)
-;         `(HANDLER-CASE (PROGN ,@STM::BODY)
-;                        (STM::ITR-HALT (,STM::E) (WARN "aaaa: ~a///" ,STM::E)))))
-; --> EVAL-WHEN SB-C::%DEFMACRO SB-C::%DEFMACRO SB-INT:NAMED-LAMBDA FUNCTION 
-; --> SB-INT:NAMED-DS-BIND SB-INT:BINDING* 
-; ==>
-;   (LET* ((#:G0
-;           (SB-C::CHECK-DS-LIST/&REST (CDR #:EXPR) 1 1
-;                                      '(# STM::EXPR &BODY STM::BODY)))
-;          (STM::EXPR (POP #:G0))
-;          (STM::BODY #:G0))
-;     (DECLARE (SB-C::CONSTANT-VALUE STM::EXPR STM::BODY))
-;     (BLOCK STM::ERR/CTX-HANDLE
-;       (STM::WITH-GENSYMS (STM::E)
-;         `(HANDLER-CASE (PROGN ,@STM::BODY) (STM::ITR-HALT # #)))))
-; 
-; caught STYLE-WARNING:
-;   The variable EXPR is defined but never used.
-
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/config-tmp5GEXGEG5.fasl
-; compilation finished in 0:00:00.004
-WARNING:
-   Lisp compilation had style-warnings while
-   compiling #<CL-SOURCE-FILE "stm" "config">
-; compiling file "/data/x/stm/src/docs.lisp" (written 02 NOV 2024 10:17:31 AM):
+; compilation finished in 0:00:00.002
+; compiling file "/data/x/stm/src/docs.lisp" (written 03 NOV 2024 02:41:05 PM):
 .
 ; file: /data/x/stm/src/docs.lisp
 ; in: DEFVAR *DOCSTRING-MAP*
@@ -80,23 +33,98 @@ WARNING:
 
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/docs-tmpAR3FSGEY.fasl
-; compilation finished in 0:00:00.017
-; compiling file "/data/x/stm/src/stm.lisp" (written 02 NOV 2024 10:07:45 AM):
-.
+; compilation finished in 0:00:00.018
+; compiling file "/data/x/stm/src/stm.lisp" (written 03 NOV 2024 02:41:05 PM):
+
+; file: /data/x/stm/src/stm.lisp
+; in: DEFMACRO MUTATE!
+;     (DEFMACRO STM:MUTATE! ((STM::OPR STM::STX &REST REST) &BODY STM::BODY)
+;       (DECLARE (SYMBOL STM::STX)
+;                (NULL STM::BODY))
+;       "perform operation and update stx to reference the next state.
+;   unless the condition cnd/halt-operation is signalled.
+;   returns: val/res, cnd
+;   cnd can be cnd/halt-itr or cnd/halt-operation"
+;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
+;         `(HANDLER-CASE
+;           (STM:MVB (,STM::NXT ,STM::VAL ,STM::E*) (,STM::OPR ,STM::STX ,@REST)
+;                    (SETF #) (VALUES ,STM::VAL ,STM::E*))
+;           (STM:CND/HALT-OPERATION (,STM::E) (VALUES NIL ,STM::E)))))
+; --> EVAL-WHEN SB-C::%DEFMACRO SB-INT:NAMED-LAMBDA SB-INT:NAMED-DS-BIND 
+; --> SB-INT:BINDING* 
+; ==>
+;   (LET* ((#:G0
+;           (SB-C::CHECK-DS-LIST/&REST (CDR #:EXPR) 1 1 '(# # &BODY STM::BODY)))
+;          (#:G1
+;           (SB-C::CHECK-DS-LIST/&REST (POP #:G0) 2 2
+;                                      '(# STM::OPR STM::STX &REST REST)))
+;          (STM::OPR (POP #:G1))
+;          (STM::STX (POP #:G1))
+;          (REST #:G1)
+;          (STM::BODY #:G0))
+;     (DECLARE (SB-C::CONSTANT-VALUE STM::OPR STM::STX REST STM::BODY)
+;              (SYMBOL STM::STX)
+;              (NULL STM::BODY))
+;     (BLOCK STM:MUTATE!
+;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
+;         `(HANDLER-CASE (STM:MVB # # # #) (STM:CND/HALT-OPERATION # #)))))
+; 
+; caught STYLE-WARNING:
+;   The variable BODY is defined but never used.
+
+; file: /data/x/stm/src/stm.lisp
+; in: DEFMACRO MUTATE!
+;     (DEFMACRO STM:MUTATE! ((STM::OPR STM::STX &REST REST) &BODY STM::BODY)
+;       (DECLARE (SYMBOL STM::STX)
+;                (NULL STM::BODY))
+;       "perform operation and update stx to reference the next state.
+;   unless the condition cnd/halt-operation is signalled.
+;   returns: val/res, cnd
+;   cnd can be cnd/halt-itr or cnd/halt-operation"
+;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
+;         `(HANDLER-CASE
+;           (STM:MVB (,STM::NXT ,STM::VAL ,STM::E*) (,STM::OPR ,STM::STX ,@REST)
+;                    (SETF #) (VALUES ,STM::VAL ,STM::E*))
+;           (STM:CND/HALT-OPERATION (,STM::E) (VALUES NIL ,STM::E)))))
+; --> EVAL-WHEN SB-C::%DEFMACRO SB-C::%DEFMACRO SB-INT:NAMED-LAMBDA FUNCTION 
+; --> SB-INT:NAMED-DS-BIND SB-INT:BINDING* 
+; ==>
+;   (LET* ((#:G0
+;           (SB-C::CHECK-DS-LIST/&REST (CDR #:EXPR) 1 1 '(# # &BODY STM::BODY)))
+;          (#:G1
+;           (SB-C::CHECK-DS-LIST/&REST (POP #:G0) 2 2
+;                                      '(# STM::OPR STM::STX &REST REST)))
+;          (STM::OPR (POP #:G1))
+;          (STM::STX (POP #:G1))
+;          (REST #:G1)
+;          (STM::BODY #:G0))
+;     (DECLARE (SB-C::CONSTANT-VALUE STM::OPR STM::STX REST STM::BODY)
+;              (SYMBOL STM::STX)
+;              (NULL STM::BODY))
+;     (BLOCK STM:MUTATE!
+;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
+;         `(HANDLER-CASE (STM:MVB # # # #) (STM:CND/HALT-OPERATION # #)))))
+; 
+; caught STYLE-WARNING:
+;   The variable BODY is defined but never used.
+..
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/stm-tmpJAIDFZTC.fasl
-; compilation finished in 0:00:00.022
+; compilation finished in 0:00:00.028
+WARNING:
+   Lisp compilation had style-warnings while
+   compiling #<CL-SOURCE-FILE "stm" "stm">
 ; 
 ; compilation unit finished
 ;   caught 2 STYLE-WARNING conditions
 ;   printed 1 note
 
 Evaluation took:
-  0.106 seconds of real time
-  0.107518 seconds of total run time (0.079325 user, 0.028193 system)
-  101.89% CPU
-  434 forms interpreted
-  688 lambdas converted
-  456,923,450 processor cycles
-  36,937,104 bytes consed
+  0.112 seconds of real time
+  0.112183 seconds of total run time (0.077486 user, 0.034697 system)
+  100.00% CPU
+  460 forms interpreted
+  723 lambdas converted
+  476,775,540 processor cycles
+  39,442,592 bytes consed
   

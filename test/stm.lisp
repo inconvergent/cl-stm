@@ -1,4 +1,3 @@
-
 (in-package #:stm-tests)
 
 (plan 3)
@@ -58,7 +57,7 @@
      (is (mvl (stm:acc/all gg)) '(nil (4 3 2 1 0)) )
      (is (mvb (g* val) (stm:acc/n gg 2) (list val (functionp g*))) '((1 0) t))
 
-     (is (mvl (stm:acc/all gg #'cons (lambda (s r) (declare (ignore r))
+     (is (mvl (stm:acc/all gg (lambda (s r) (declare (ignore r))
                                        (lqn:fmt "~a/" s))))
          '(nil ("4/" "3/" "2/" "1/" "0/")))
      (is (mvb (g* val) (stm:acc/until gg (lambda (o) (> o 2)))

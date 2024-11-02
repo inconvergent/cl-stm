@@ -4,7 +4,11 @@
   (:nicknames #:cl-state-machine)
   (:export #:*act*
     #:mvc #:mvb #:mvl #:dsb
-    #:r/print #:r/print* #:r/identity
+    #:cnd/halt-itr #:cnd/halt-operation
+    #:cnd/msg #:cnd/flag #:cnd/rule
+    #:cnd/base
+    #:mutate!
+    #:r/print #:r/print* #:r/identity #:r/acc/val
     #:? #:new #:with-rules #:later
     #:acc/all #:acc/n #:acc/until
     #:itr/all #:itr/n #:itr/until)

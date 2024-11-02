@@ -11,11 +11,12 @@
                             f)))
     (loop with fails = 0
           for f in (rel files)
-          do ;(format t "~&~%starting tests in: ~a~%" (lqn:str! f))
+          do (format t "~&~%starting tests in: ~a~%" (lqn:str! f))
              (unless (prove:run f :reporter :fiveam)
                      (incf fails))
-             ;(format t "~&itrne: ~a~%" (lqn:str! f))
+             (format t "~&done: ~a~%" (lqn:str! f))
           finally (return (unless (< fails 1) (uiop:quit 7))))))
 
 (defun run-tests ()
-  (-run-tests '(#P"test/stm.lisp")))
+  (-run-tests '(#P"test/stm.lisp"
+                #P"test/stm-cnd.lisp")))

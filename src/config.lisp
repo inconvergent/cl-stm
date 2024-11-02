@@ -3,24 +3,26 @@
 
 (deftype maybe-fuction () "null or function" `(or function null))
 
-(define-condition itr-halt (condition)
-  ((state :initarg :state :reader state)
-   (msg :initarg :msg :reader msg))
-  ; (:report (lambda (c s) (format s "██ expr:~%~s~%██ full msg:~%~a.~&" (expr c) (msg c))))
-  (:documentation "STM w/msg.~&"))
+(define-condition cnd/base (condition)
+  ((rule :initarg :rule :reader cnd/rule)
+   (flag :initarg :flag :reader cnd/flag)
+   (msg :initarg :msg :reader cnd/msg))
+  (:documentation "STM base condition."))
 
-(defun itr-halt (expr msg)
-  "raise itr-halt condition."
-  (error 'itr-halt :expr expr :msg msg))
+; (:report (lambda (c s) (format s "~&██{HALT ITR @ ~a}: ~a~&" (rule c) (msg c))))
+(define-condition cnd/halt-itr (cnd/base) nil
+  (:documentation "halt ITR condition."))
 
-(defmacro err/ctx (expr &body body)
-  "evaluate body or raise itr-halt condition"
-  (with-gensyms (e)
-     `(handler-case (progn ,@body)
-        (error (,e) (itr-halt ,expr ,e)))))
+(define-condition cnd/halt-operation (cnd/base) nil
+  (:documentation "halt operation condition."))
 
+(defun cnd/halt-itr (rule flag &rest msg)
+  "halt itr/acc. return current value"
+  (error 'cnd/halt-itr :rule rule  :flag flag
+                       :msg (apply #'format nil msg)))
 
-(defmacro err/ctx-handle (expr &body body)
-  (with-gensyms (e)
-  `(handler-case (progn ,@body)
-     (itr-halt (,e) (warn "aaaa: ~a///" ,e)))))
+(defun cnd/halt-operation (rule flag &rest msg)
+  "halt itr/acc mutation. return current value"
+  (error 'cnd/halt-operation :rule rule  :flag flag
+                             :msg (apply #'format nil msg)))
+
