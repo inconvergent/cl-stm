@@ -13,4 +13,4 @@
       (itr/n sm10 11 #'r/print*)))
 ```
 
-full example in [/ex.lisp](/ex.lisp).
+examples in [/ex](/ex).

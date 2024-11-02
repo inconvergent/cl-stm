@@ -7,7 +7,8 @@
   :depends-on (#:lqn)
   :components ((:file "packages")
                (:file "utils" :depends-on ("packages"))
-               (:file "docs" :depends-on ("utils"))
+               (:file "config" :depends-on ("utils"))
+               (:file "docs" :depends-on ("config"))
                (:file "stm" :depends-on ("docs"))))
 
 (asdf:defsystem #:stm/tests

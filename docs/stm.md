@@ -20,9 +20,10 @@
  ;   [symbol]
  ; 
  ; ? names a macro:
- ;   Lambda-list: (&REST REST)
+ ;   Lambda-list: (&REST ARGS)
  ;   Documentation:
- ;     alias for new.
+ ;     alias: NEW
+ ; 
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
 ```
@@ -34,7 +35,7 @@
  ; 
  ; ACC/ALL names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL (ACC (FUNCTION CONS)) ACT RES)
- ;   Derived type: (FUNCTION (T &OPTIONAL FUNCTION T T)
+ ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL FUNCTION T T)
  ;                  (VALUES NULL T &OPTIONAL))
  ;   Documentation:
  ;     accumulate all. see with-rules.
@@ -49,8 +50,8 @@
  ; 
  ; ACC/N names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL (N 1) (ACC (FUNCTION CONS)) ACT RES)
- ;   Derived type: (FUNCTION (T &OPTIONAL FIXNUM FUNCTION T T)
- ;                  (VALUES T T &OPTIONAL))
+ ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL FIXNUM FUNCTION T T)
+ ;                  (VALUES (OR NULL FUNCTION) T &OPTIONAL))
  ;   Documentation:
  ;     accumulate at most n times. see with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp
@@ -65,11 +66,25 @@
  ; ACC/UNTIL names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL (UNTIL (FUNCTION IDENTITY))
  ;                 (ACC (FUNCTION CONS)) ACT RES)
- ;   Derived type: (FUNCTION (T &OPTIONAL FUNCTION FUNCTION T T)
- ;                  (VALUES T T &OPTIONAL))
+ ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL FUNCTION FUNCTION T T)
+ ;                  (VALUES (OR NULL FUNCTION) T &OPTIONAL))
  ;   Documentation:
  ;     accumulate until. see with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
+```
+
+## `stm:dsb`
+```
+ ; STM:DSB
+ ;   [symbol]
+ ; 
+ ; DSB names a macro:
+ ;   Lambda-list: (&REST ARGS)
+ ;   Documentation:
+ ;     alias: DESTRUCTURING-BIND
+ ; 
+ ;   Source file: /data/x/stm/src/utils.lisp
  ; 
 ```
 
@@ -80,9 +95,10 @@
  ; 
  ; ITR/ALL names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL ACT RES)
- ;   Derived type: (FUNCTION (T &OPTIONAL T T) *)
+ ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL T T) *)
  ;   Documentation:
  ;     iterate all. see with-rules.
+ ;   Inline proclamation: INLINE (inline expansion available)
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
 ```
@@ -94,9 +110,10 @@
  ; 
  ; ITR/N names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL (N 1) ACT RES)
- ;   Derived type: (FUNCTION (T &OPTIONAL FIXNUM T T) *)
+ ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL FIXNUM T T) *)
  ;   Documentation:
  ;     iterate at most n times. see with-rules.
+ ;   Inline proclamation: INLINE (inline expansion available)
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
 ```
@@ -108,9 +125,10 @@
  ; 
  ; ITR/UNTIL names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL (UNTIL (FUNCTION IDENTITY)) ACT RES)
- ;   Derived type: (FUNCTION (T &OPTIONAL FUNCTION T T) *)
+ ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL FUNCTION T T) *)
  ;   Documentation:
  ;     iterate until. see with-rules.
+ ;   Inline proclamation: INLINE (inline expansion available)
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
 ```
@@ -125,6 +143,48 @@
  ;   Documentation:
  ;     wrap expression in (lambda () ...) to evaluate later.
  ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
+```
+
+## `stm:mvb`
+```
+ ; STM:MVB
+ ;   [symbol]
+ ; 
+ ; MVB names a macro:
+ ;   Lambda-list: (&REST ARGS)
+ ;   Documentation:
+ ;     alias: MULTIPLE-VALUE-BIND
+ ; 
+ ;   Source file: /data/x/stm/src/utils.lisp
+ ; 
+```
+
+## `stm:mvc`
+```
+ ; STM:MVC
+ ;   [symbol]
+ ; 
+ ; MVC names a macro:
+ ;   Lambda-list: (&REST ARGS)
+ ;   Documentation:
+ ;     alias: MULTIPLE-VALUE-CALL
+ ; 
+ ;   Source file: /data/x/stm/src/utils.lisp
+ ; 
+```
+
+## `stm:mvl`
+```
+ ; STM:MVL
+ ;   [symbol]
+ ; 
+ ; MVL names a macro:
+ ;   Lambda-list: (&REST ARGS)
+ ;   Documentation:
+ ;     alias: MULTIPLE-VALUE-LIST
+ ; 
+ ;   Source file: /data/x/stm/src/utils.lisp
  ; 
 ```
 
@@ -220,7 +280,7 @@
  ;     all accumulators also have an acc and a res option:
  ;       - acc is used for accumulation. the default is
  ;     
- ;         ; (lambda (v rule res) (cons v res)) ; aka. #'r/cons
+ ;         ; (lambda (v res) (cons v res)) ; aka. #'cons
  ;     
  ;         NOTE: you can filter which values are accumulated like this:
  ;     

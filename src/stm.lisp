@@ -1,6 +1,8 @@
 (in-package #:stm)
 
-(declaim (inline r/identity r/cons r/print r/print*))
+(declaim (inline r/identity r/print r/print*))
+(declaim (inline itr/all itr/n itr/until))
+
 
 (defmacro later (expr)
   "wrap expression in (lambda () ...) to evaluate later."
@@ -10,11 +12,6 @@
   (declare (optimize speed) (ignore rule) (keyword rule))
   "default function for act / *act*."
   v)
-
-(defun r/cons (v rule res)
-  (declare (optimize speed) (ignore rule) (keyword rule))
-  "default function for acc."
-  (cons v res))
 
 (defun r/print (v rule)
   (declare (optimize speed) (ignore rule) (keyword rule))
@@ -34,12 +31,11 @@ value for each iteration.
 the second is the (keyword) name of the current rule.")
 
 ; TODO: until state
-
-(defun replace-rule-placeholder (name expr) ; TODO: broken
-  (lqn:qry expr (?txpr (equal _ '?_) (kw! name))))
+; (defun replace-rule-placeholder (name expr)
+;   (lqn:qry expr (?txpr (equal _ '?_) (kw! name))))
 
 (defmacro stx/lambda ((name arg vfx) &body expr)
-  (stm::with-gensyms (v nxt act)
+  (with-gensyms (v nxt act)
     `(lambda (&optional ,act) ; stx
        (let ((,arg (funcall ,vfx)))
          (multiple-value-bind (,v ,nxt) (progn ,@expr) ; expr returns v, nxt
@@ -52,13 +48,11 @@ the second is the (keyword) name of the current rule.")
 (defun make-rule-label (name arg expr)
   "create rule label with name, argument and rule/condition."
   (declare (symbol name arg))
-  (stm::with-gensyms (vfx)
+  (with-gensyms (vfx)
     `((,name (,vfx)
        (declare (function ,vfx))
-       (stx/lambda (,name ,arg ,vfx)
-        ,(replace-rule-placeholder name expr))))))
+       (stx/lambda (,name ,arg ,vfx) ,expr)))))
 
-  ; (lambda (v rule res) (cons v res))
 
 (defmacro with-rules (rules &body body)
   (declare (list rules))
@@ -88,7 +82,7 @@ all iterators and accumulators use the act function to process each value
 all accumulators also have an acc and a res option:
   - acc is used for accumulation. the default is
 
-    ; (lambda (v rule res) (cons v res)) ; aka. #'r/cons
+    ; (lambda (v res) (cons v res)) ; aka. #'cons
 
     NOTE: you can filter which values are accumulated like this:
 
@@ -105,47 +99,49 @@ all accumulators also have an acc and a res option:
 (defmacro new (name expr)
   (declare (symbol name))
   "new state with this rule and expression. see with-rules."
-  `(,name (later ,(replace-rule-placeholder name expr))))
-(defmacro ? (&rest rest) "alias for new." `(new ,@rest))
+  `(,name (later ,expr)))
+(abbrev ? new)
 
 
 (defun acc/all (stx &optional (acc #'cons) act res)
-  (declare (optimize speed) (function acc))
+  (declare (optimize speed) (function stx acc))
   "accumulate all. see with-rules."
-  (if stx (multiple-value-bind (nxt val) (funcall (the function stx) act)
-               (acc/all nxt acc act (funcall acc val res)))
-          (values nil res)))
+  (mvb (nxt val) (funcall stx act)
+    (declare (maybe-fuction nxt))
+    (if nxt (acc/all nxt acc act (funcall acc val res))
+            (values nil (funcall acc val res)))))
 
 (defun acc/n (stx &optional (n 1) (acc #'cons) act res)
-  (declare (optimize speed) (fixnum n) (function acc))
+  (declare (optimize speed) (function stx acc) (fixnum n))
   "accumulate at most n times. see with-rules."
-  (if (and stx (> n 0))
-      (multiple-value-bind (nxt val) (funcall (the function stx) act)
-           (acc/n nxt (1- n) acc act (funcall acc val res)))
+  (if (> n 0)
+      (mvb (nxt val) (funcall stx act)
+        (declare (maybe-fuction nxt))
+        (if nxt (acc/n nxt (1- n) acc act (funcall acc val res))
+                (values nil (funcall acc val res))))
       (values stx res)))
 
 (defun acc/until (stx &optional (until #'identity) (acc #'cons) act res)
-  (declare (optimize speed) (function until acc))
+  (declare (optimize speed) (function stx until acc))
   "accumulate until. see with-rules."
-  (if stx (multiple-value-bind (nxt val) (funcall (the function stx) act)
-               (if (not (funcall until val))
-                   (acc/until nxt until acc act (funcall acc val res))
-                   (values nxt (funcall acc val res))))
-          (values nil res)))
+  (mvb (nxt val) (funcall stx act)
+    (declare (maybe-fuction nxt))
+    (cond ((not nxt) (values nil (funcall acc val res)))
+          ((not (funcall until val))
+           (acc/until nxt until acc act (funcall acc val res)))
+          (t (values nxt (funcall acc val res))))))
 
 
-(defun itr/all (stx &optional act res)
-  (declare (optimize speed))
+(defun itr/all (stx &optional act res) ; thin wrapper
+  (declare (optimize speed) (function stx))
   "iterate all. see with-rules."
   (acc/all stx #'values act res))
-
-(defun itr/n (stx &optional (n 1) act res)
-  (declare (optimize speed) (fixnum n))
+(defun itr/n (stx &optional (n 1) act res) ; thin wrapper
+  (declare (optimize speed) (function stx) (fixnum n))
   "iterate at most n times. see with-rules."
   (acc/n stx n #'values act res))
-
-(defun itr/until (stx &optional (until #'identity) act res)
-  (declare (optimize speed) (function until))
+(defun itr/until (stx &optional (until #'identity) act res) ; thin wrapper
+  (declare (optimize speed) (function stx until))
   "iterate until. see with-rules."
   (acc/until stx until #'values act res))
 

@@ -1,10 +1,9 @@
 (in-package :stm)
 
-(defmacro abbrev (short long) `(defmacro ,short (&rest args) `(,',long ,@args)))
-(abbrev mvc multiple-value-call)
-(abbrev mvb multiple-value-bind)
-(abbrev mvl multiple-value-list)
-(abbrev dsb destructuring-bind)
+(defmacro abbrev (short long)
+  `(defmacro ,short (&rest args) ,(lqn:fmt "alias: ~s~&" long) `(,',long ,@args)))
+(abbrev mvc multiple-value-call) (abbrev mvb multiple-value-bind)
+(abbrev mvl multiple-value-list) (abbrev dsb destructuring-bind)
 
 (defun v? (&optional (silent t)
            &aux (v (slot-value (asdf:find-system 'stm) 'asdf:version)))

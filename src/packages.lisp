@@ -3,6 +3,7 @@
   (:use #:common-lisp)
   (:nicknames #:cl-state-machine)
   (:export #:*act*
+    #:mvc #:mvb #:mvl #:dsb
     #:r/print #:r/print* #:r/identity
     #:? #:new #:with-rules #:later
     #:acc/all #:acc/n #:acc/until
