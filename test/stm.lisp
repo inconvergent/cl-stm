@@ -54,12 +54,12 @@
   (stm:with-rules
     ((gx i (values i (if (< i 4) (stm:new gx (1+ i)) t))))
     (let* ((gg (stm:new gx 0)))
-     (is (mvl (stm:acc/all gg)) '(nil (4 3 2 1 0)) )
+     (is (mvl (stm:acc/all gg)) '(nil (4 3 2 1 0) nil))
      (is (mvb (g* val) (stm:acc/n gg 2) (list val (functionp g*))) '((1 0) t))
 
      (is (mvl (stm:acc/all gg (lambda (s r) (declare (ignore r))
                                        (lqn:fmt "~a/" s))))
-         '(nil ("4/" "3/" "2/" "1/" "0/")))
+         '(nil ("4/" "3/" "2/" "1/" "0/") nil))
      (is (mvb (g* val) (stm:acc/until gg (lambda (o) (> o 2)))
               (list val (functionp g*)))
          '((3 2 1 0) T)))))

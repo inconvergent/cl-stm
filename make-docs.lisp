@@ -2,7 +2,7 @@
 
 (load "~/quicklisp/setup.lisp")
 (ql:quickload :stm :silent t)
-(in-package :stm)
+(in-package #:stm)
 
 (defun import-all (fn)
   (with-open-file (f (mkstr fn ".lisp") :direction :input)

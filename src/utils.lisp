@@ -1,4 +1,4 @@
-(in-package :stm)
+(in-package #:stm)
 
 (defmacro abbrev (short long)
   `(defmacro ,short (&rest args) ,(lqn:fmt "alias: ~s~&" long) `(,',long ,@args)))

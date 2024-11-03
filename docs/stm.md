@@ -35,8 +35,12 @@
  ; 
  ; ACC/ALL names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL ACT (ACC (FUNCTION CONS)) RES)
+ ;   Declared type: (FUNCTION (FUNCTION &OPTIONAL T FUNCTION T)
+ ;                   (VALUES &OPTIONAL (OR NULL FUNCTION) T
+ ;                           (OR STM:CND/ALL NULL) &REST T))
  ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL T FUNCTION T)
- ;                  (VALUES (OR NULL FUNCTION) T &OPTIONAL T))
+ ;                  (VALUES (OR NULL FUNCTION) T (OR STM:CND/ALL NULL)
+ ;                          &OPTIONAL))
  ;   Documentation:
  ;     accumulate all. see with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp
@@ -50,8 +54,12 @@
  ; 
  ; ACC/N names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL (N 1) ACT (ACC (FUNCTION CONS)) RES)
+ ;   Declared type: (FUNCTION (FUNCTION &OPTIONAL FIXNUM T FUNCTION T)
+ ;                   (VALUES &OPTIONAL (OR NULL FUNCTION) T
+ ;                           (OR STM:CND/ALL NULL) &REST T))
  ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL FIXNUM T FUNCTION T)
- ;                  (VALUES (OR NULL FUNCTION) T &OPTIONAL T))
+ ;                  (VALUES (OR NULL FUNCTION) T (OR STM:CND/ALL NULL)
+ ;                          &OPTIONAL))
  ;   Documentation:
  ;     accumulate at most n times. see with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp
@@ -66,27 +74,31 @@
  ; ACC/UNTIL names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL (UNTIL (FUNCTION IDENTITY)) ACT
  ;                 (ACC (FUNCTION CONS)) RES)
+ ;   Declared type: (FUNCTION (FUNCTION &OPTIONAL FUNCTION T FUNCTION T)
+ ;                   (VALUES &OPTIONAL (OR NULL FUNCTION) T
+ ;                           (OR STM:CND/ALL NULL) &REST T))
  ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL FUNCTION T FUNCTION T)
- ;                  (VALUES (OR NULL FUNCTION) T &OPTIONAL T))
+ ;                  (VALUES (OR NULL FUNCTION) T (OR STM:CND/ALL NULL)
+ ;                          &OPTIONAL))
  ;   Documentation:
  ;     accumulate until. see with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
 ```
 
-## `stm:cnd/base`
+## `stm:cnd/all`
 ```
 :missing:
 
- ; STM:CND/BASE
+ ; STM:CND/ALL
  ;   [symbol]
  ; 
- ; CND/BASE names the condition-class #<SB-PCL::CONDITION-CLASS STM:CND/BASE>:
+ ; CND/ALL names the condition-class #<SB-PCL::CONDITION-CLASS STM:CND/ALL>:
  ;   Documentation:
- ;     STM base condition.
- ;   Class precedence-list: CND/BASE, CONDITION, SB-PCL::SLOT-OBJECT, T
+ ;     all conditions to control STM flow.
+ ;   Class precedence-list: CND/ALL, CONDITION, SB-PCL::SLOT-OBJECT, T
  ;   Direct superclasses: CONDITION
- ;   Direct subclasses: CND/HALT-OPERATION, CND/HALT-ITR
+ ;   Direct subclasses: CND/DISCARD-OPERATION, CND/STOP-ITR, CND/HALT-ITR
  ;   Direct slots:
  ;     RULE
  ;       Initargs: :RULE
@@ -94,9 +106,50 @@
  ;     FLAG
  ;       Initargs: :FLAG
  ;       Readers: CND/FLAG
+ ;     OBJ
+ ;       Initargs: :OBJ
+ ;       Readers: CND/OBJ
  ;     MSG
  ;       Initargs: :MSG
  ;       Readers: CND/MSG
+ ; 
+```
+
+## `stm:cnd/bind-warn`
+```
+ ; STM:CND/BIND-WARN
+ ;   [symbol]
+ ; 
+ ; CND/BIND-WARN names a macro:
+ ;   Lambda-list: ((VAL CND) EXPR &BODY BODY)
+ ;   Documentation:
+ ;     (mv)bind val, cnd and warn if cnd is stm:cnd/all.
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
+ ; 
+```
+
+## `stm:cnd/discard-operation`
+```
+ ; STM:CND/DISCARD-OPERATION
+ ;   [symbol]
+ ; 
+ ; CND/DISCARD-OPERATION names a compiled function:
+ ;   Lambda-list: (RULE OBJ &OPTIONAL FLAG &REST MSG)
+ ;   Derived type: (FUNCTION
+ ;                  (KEYWORD T &OPTIONAL (OR KEYWORD NULL) &REST T)
+ ;                  (VALUES NULL &OPTIONAL))
+ ;   Documentation:
+ ;     discard itr/acc/mutation. see: with-rules/mutate!
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
+ ; 
+ ; CND/DISCARD-OPERATION names the condition-class #<SB-PCL::CONDITION-CLASS STM:CND/DISCARD-OPERATION>:
+ ;   Documentation:
+ ;     condition to discard operation.
+ ;   Class precedence-list: CND/DISCARD-OPERATION, CND/ALL, CONDITION,
+ ;                          SB-PCL::SLOT-OBJECT, T
+ ;   Direct superclasses: CND/ALL
+ ;   No subclasses.
+ ;   No direct slots.
  ; 
 ```
 
@@ -112,7 +165,7 @@
  ;   Derived type: (FUNCTION (T) *)
  ;   Method-combination: STANDARD
  ;   Methods:
- ;     (CND/FLAG (CND/BASE))
+ ;     (CND/FLAG (CND/ALL))
  ; 
 ```
 
@@ -122,41 +175,20 @@
  ;   [symbol]
  ; 
  ; CND/HALT-ITR names a compiled function:
- ;   Lambda-list: (RULE FLAG &REST MSG)
- ;   Derived type: (FUNCTION (T T &REST T) NIL)
+ ;   Lambda-list: (RULE OBJ &OPTIONAL FLAG &REST MSG)
+ ;   Derived type: (FUNCTION
+ ;                  (KEYWORD T &OPTIONAL (OR KEYWORD NULL) &REST T)
+ ;                  (VALUES NULL &OPTIONAL))
  ;   Documentation:
- ;     halt itr/acc. return current value
- ;   Source file: /data/x/stm/src/config.lisp
+ ;     halt itr/acc. see: with-rules.
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
  ; CND/HALT-ITR names the condition-class #<SB-PCL::CONDITION-CLASS STM:CND/HALT-ITR>:
  ;   Documentation:
- ;     halt ITR condition.
- ;   Class precedence-list: CND/HALT-ITR, CND/BASE, CONDITION,
+ ;     condition to halt ITR.
+ ;   Class precedence-list: CND/HALT-ITR, CND/ALL, CONDITION,
  ;                          SB-PCL::SLOT-OBJECT, T
- ;   Direct superclasses: CND/BASE
- ;   No subclasses.
- ;   No direct slots.
- ; 
-```
-
-## `stm:cnd/halt-operation`
-```
- ; STM:CND/HALT-OPERATION
- ;   [symbol]
- ; 
- ; CND/HALT-OPERATION names a compiled function:
- ;   Lambda-list: (RULE FLAG &REST MSG)
- ;   Derived type: (FUNCTION (T T &REST T) NIL)
- ;   Documentation:
- ;     halt itr/acc mutation. return current value
- ;   Source file: /data/x/stm/src/config.lisp
- ; 
- ; CND/HALT-OPERATION names the condition-class #<SB-PCL::CONDITION-CLASS STM:CND/HALT-OPERATION>:
- ;   Documentation:
- ;     halt operation condition.
- ;   Class precedence-list: CND/HALT-OPERATION, CND/BASE, CONDITION,
- ;                          SB-PCL::SLOT-OBJECT, T
- ;   Direct superclasses: CND/BASE
+ ;   Direct superclasses: CND/ALL
  ;   No subclasses.
  ;   No direct slots.
  ; 
@@ -174,7 +206,7 @@
  ;   Derived type: (FUNCTION (T) *)
  ;   Method-combination: STANDARD
  ;   Methods:
- ;     (CND/MSG (CND/BASE))
+ ;     (CND/MSG (CND/ALL))
  ; 
 ```
 
@@ -190,7 +222,32 @@
  ;   Derived type: (FUNCTION (T) *)
  ;   Method-combination: STANDARD
  ;   Methods:
- ;     (CND/RULE (CND/BASE))
+ ;     (CND/RULE (CND/ALL))
+ ; 
+```
+
+## `stm:cnd/stop-itr`
+```
+ ; STM:CND/STOP-ITR
+ ;   [symbol]
+ ; 
+ ; CND/STOP-ITR names a compiled function:
+ ;   Lambda-list: (RULE OBJ &OPTIONAL FLAG &REST MSG)
+ ;   Derived type: (FUNCTION
+ ;                  (KEYWORD T &OPTIONAL (OR KEYWORD NULL) &REST T)
+ ;                  (VALUES NULL &OPTIONAL))
+ ;   Documentation:
+ ;     halt itr/acc and stop. see: with-rules.
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
+ ; 
+ ; CND/STOP-ITR names the condition-class #<SB-PCL::CONDITION-CLASS STM:CND/STOP-ITR>:
+ ;   Documentation:
+ ;     condition to stop ITR.
+ ;   Class precedence-list: CND/STOP-ITR, CND/ALL, CONDITION,
+ ;                          SB-PCL::SLOT-OBJECT, T
+ ;   Direct superclasses: CND/ALL
+ ;   No subclasses.
+ ;   No direct slots.
  ; 
 ```
 
@@ -215,7 +272,9 @@
  ; 
  ; ITR/ALL names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL ACT RES)
- ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL T T) *)
+ ;   Declared type: (FUNCTION (FUNCTION &OPTIONAL T T)
+ ;                   (VALUES &OPTIONAL (OR NULL FUNCTION) T
+ ;                           (OR STM:CND/ALL NULL) &REST T))
  ;   Documentation:
  ;     iterate all. see with-rules.
  ;   Inline proclamation: INLINE (inline expansion available)
@@ -230,7 +289,9 @@
  ; 
  ; ITR/N names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL (N 1) ACT RES)
- ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL FIXNUM T T) *)
+ ;   Declared type: (FUNCTION (FUNCTION &OPTIONAL FIXNUM T T)
+ ;                   (VALUES &OPTIONAL (OR NULL FUNCTION) T
+ ;                           (OR STM:CND/ALL NULL) &REST T))
  ;   Documentation:
  ;     iterate at most n times. see with-rules.
  ;   Inline proclamation: INLINE (inline expansion available)
@@ -245,7 +306,9 @@
  ; 
  ; ITR/UNTIL names a compiled function:
  ;   Lambda-list: (STX &OPTIONAL (UNTIL (FUNCTION IDENTITY)) ACT RES)
- ;   Derived type: (FUNCTION (FUNCTION &OPTIONAL FUNCTION T T) *)
+ ;   Declared type: (FUNCTION (FUNCTION &OPTIONAL FUNCTION T T)
+ ;                   (VALUES &OPTIONAL (OR NULL FUNCTION) T
+ ;                           (OR STM:CND/ALL NULL) &REST T))
  ;   Documentation:
  ;     iterate until. see with-rules.
  ;   Inline proclamation: INLINE (inline expansion available)
@@ -262,7 +325,22 @@
  ;   Lambda-list: (EXPR)
  ;   Documentation:
  ;     wrap expression in (lambda () ...) to evaluate later.
- ;   Source file: /data/x/stm/src/stm.lisp
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
+ ; 
+```
+
+## `stm:maybe-cnd`
+```
+:missing:
+
+ ; STM:MAYBE-CND
+ ;   [symbol]
+ ; 
+ ; MAYBE-CND names a type-specifier:
+ ;   Documentation:
+ ;     null or cnd/all
+ ;   Lambda-list: ()
+ ;   Expansion: (OR CND/ALL NULL)
  ; 
 ```
 
@@ -275,10 +353,25 @@
  ;   Lambda-list: ((OPR STX &REST REST) &BODY BODY)
  ;   Documentation:
  ;     perform operation and update stx to reference the next state.
- ;     unless the condition cnd/halt-operation is signalled.
- ;     returns: val/res, cnd
- ;     cnd can be cnd/halt-itr or cnd/halt-operation
- ;   Source file: /data/x/stm/src/stm.lisp
+ ;     
+ ;     ex:
+ ;     
+ ;      ; equal to mvb but with cnd warnings for cnd/all conditions
+ ;      (cnd/bind-warn (val cnd) ; result of itr/n, and conditions if any
+ ;                     (mutate! (itr/n sfx 5))
+ ;        (print (list val cnd)))
+ ;     
+ ;     CONDITIONS
+ ;     
+ ;       mutate! has special handling of cnd/discard-operation. it will handle the
+ ;       conditon by not mutating stx, and returning:
+ ;     
+ ;         values: nil cnd
+ ;     
+ ;       where cnd can be any cnd/all subcondition. eg. if the operation was halted.
+ ;       see with-rules for more details on conditions.
+ ; 
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
 ```
 
@@ -348,7 +441,7 @@
  ;   Documentation:
  ;     the accumulator used in all iterators.
  ;   Inline proclamation: INLINE (inline expansion available)
- ;   Source file: /data/x/stm/src/stm.lisp
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
 ```
 
@@ -363,7 +456,7 @@
  ;   Documentation:
  ;     default function for act / *act*.
  ;   Inline proclamation: INLINE (inline expansion available)
- ;   Source file: /data/x/stm/src/stm.lisp
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
 ```
 
@@ -378,7 +471,7 @@
  ;   Documentation:
  ;     print rule and value. return v.
  ;   Inline proclamation: INLINE (inline expansion available)
- ;   Source file: /data/x/stm/src/stm.lisp
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
 ```
 
@@ -393,7 +486,7 @@
  ;   Documentation:
  ;     print rule and value. return v.
  ;   Inline proclamation: INLINE (inline expansion available)
- ;   Source file: /data/x/stm/src/stm.lisp
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
 ```
 
@@ -405,7 +498,9 @@
  ; WITH-RULES names a macro:
  ;   Lambda-list: (RULES &BODY BODY)
  ;   Documentation:
- ;     state machine context with rules/states.
+ ;     
+ ;     STATE MACHINE CONTEXT WITH RULES/STATES.
+ ;     
  ;     ex:
  ;     
  ;       ; (with-rules
@@ -416,11 +511,17 @@
  ;       ;          (sm3 (itr/n sm0 3 #'princ))) ; eval & print 3 ping-pongs
  ;       ;     (itr/n sm3 11 #'print)))          ; eval & print the next 11
  ;     
- ;     see iterators and accumulators:
+ ;     ITR / ACC - iterators and accumulators
+ ;     
+ ;       there are three accumulator / iterator functions:
+ ;     
  ;       - acc/all acc/n acc/until
  ;       - itr/all itr/n itr/until
  ;     
- ;     all iterators and accumulators use the act function to process each value
+ ;       NOTE: the iterators are just thinwraps around the corresponding accumulator
+ ;             using the r/acc/val function. which just returns the value.
+ ;     
+ ;       all iterators and accumulators use the act function to process each value
  ;       before it is returned. the default is:
  ;     
  ;       ; (lambda (v rule) v) ; aka #'r/identity, which just returns the value.
@@ -428,7 +529,8 @@
  ;       NOTE: also see r/print and r/print*, which are useful for development.
  ;       NOTE: to override for the entire context set: stm:*act*.
  ;     
- ;     all accumulators also have an acc and a res option:
+ ;       all accumulators also have an acc and a res option:
+ ;     
  ;       - acc is used for accumulation. the default is
  ;     
  ;         ; (lambda (v res) (cons v res)) ; aka. #'cons
@@ -441,6 +543,14 @@
  ;       - res is the initial value of the accumulation. default: (list).
  ;         res does not have to be a list, but if you override you have to override
  ;         acc to be compatible and vice-versa.
+ ;     
+ ;     ACC/ITR & CONDITIONS
+ ;     
+ ;       iterators and accumulators have special handling of two conditions
+ ;       when signalled in eg act or acc functions:
+ ;     
+ ;       - cnd/halt-itr, halts iteration, returns values: val stx cnd;
+ ;       - cnd/stop-itr, halts iteration, returns values: val nil cnd.
  ; 
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 

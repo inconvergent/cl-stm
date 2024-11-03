@@ -9,47 +9,35 @@ To load "stm":
   Load 1 ASDF system:
     stm
 ; Loading "stm"
-; compiling file "/data/x/stm/src/packages.lisp" (written 03 NOV 2024 02:41:05 PM):
+; compiling file "/data/x/stm/src/packages.lisp" (written 04 NOV 2024 10:33:00 AM):
 [package stm]
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/packages-tmpGHU3ALSV.fasl
 ; compilation finished in 0:00:00.001
-; compiling file "/data/x/stm/src/utils.lisp" (written 03 NOV 2024 02:41:05 PM):
+; compiling file "/data/x/stm/src/utils.lisp" (written 03 NOV 2024 08:02:58 PM):
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/utils-tmpAAURSO1.fasl
-; compilation finished in 0:00:00.009
-; compiling file "/data/x/stm/src/config.lisp" (written 03 NOV 2024 02:47:42 PM):
+; compilation finished in 0:00:00.010
+; compiling file "/data/x/stm/src/pre-stm.lisp" (written 04 NOV 2024 09:56:42 PM):
 .
-
-; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/config-tmp5GEXGEG5.fasl
-; compilation finished in 0:00:00.002
-; compiling file "/data/x/stm/src/docs.lisp" (written 03 NOV 2024 02:41:05 PM):
-.
-; file: /data/x/stm/src/docs.lisp
-; in: DEFVAR *DOCSTRING-MAP*
-;     (LIST)
-; 
-; note: deleting unreachable code
-
-
-; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/docs-tmpAR3FSGEY.fasl
-; compilation finished in 0:00:00.018
-; compiling file "/data/x/stm/src/stm.lisp" (written 03 NOV 2024 02:41:05 PM):
-
-; file: /data/x/stm/src/stm.lisp
+; file: /data/x/stm/src/pre-stm.lisp
 ; in: DEFMACRO MUTATE!
 ;     (DEFMACRO STM:MUTATE! ((STM::OPR STM::STX &REST REST) &BODY STM::BODY)
 ;       (DECLARE (SYMBOL STM::STX)
 ;                (NULL STM::BODY))
-;       "perform operation and update stx to reference the next state.
-;   unless the condition cnd/halt-operation is signalled.
-;   returns: val/res, cnd
-;   cnd can be cnd/halt-itr or cnd/halt-operation"
+;       #<(SIMPLE-ARRAY CHARACTER
+;          (548)) perform operation and update stx to reference the next state.
+;   
+;   ex:
+;   
+;    ; equal to mvb but with cnd warnings for cnd/all conditions
+;    (cnd/bind-warn (val cnd) ; result of itr/n, and conditions if any
+;       ... {1006CDE80F}>
 ;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
 ;         `(HANDLER-CASE
 ;           (STM:MVB (,STM::NXT ,STM::VAL ,STM::E*) (,STM::OPR ,STM::STX ,@REST)
 ;                    (SETF #) (VALUES ,STM::VAL ,STM::E*))
-;           (STM:CND/HALT-OPERATION (,STM::E) (VALUES NIL ,STM::E)))))
+;           (STM:CND/DISCARD-OPERATION (,STM::E) (VALUES NIL ,STM::E)))))
 ; --> EVAL-WHEN SB-C::%DEFMACRO SB-INT:NAMED-LAMBDA SB-INT:NAMED-DS-BIND 
 ; --> SB-INT:BINDING* 
 ; ==>
@@ -67,25 +55,29 @@ To load "stm":
 ;              (NULL STM::BODY))
 ;     (BLOCK STM:MUTATE!
 ;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
-;         `(HANDLER-CASE (STM:MVB # # # #) (STM:CND/HALT-OPERATION # #)))))
+;         `(HANDLER-CASE (STM:MVB # # # #) (STM:CND/DISCARD-OPERATION # #)))))
 ; 
 ; caught STYLE-WARNING:
 ;   The variable BODY is defined but never used.
 
-; file: /data/x/stm/src/stm.lisp
+; file: /data/x/stm/src/pre-stm.lisp
 ; in: DEFMACRO MUTATE!
 ;     (DEFMACRO STM:MUTATE! ((STM::OPR STM::STX &REST REST) &BODY STM::BODY)
 ;       (DECLARE (SYMBOL STM::STX)
 ;                (NULL STM::BODY))
-;       "perform operation and update stx to reference the next state.
-;   unless the condition cnd/halt-operation is signalled.
-;   returns: val/res, cnd
-;   cnd can be cnd/halt-itr or cnd/halt-operation"
+;       #<(SIMPLE-ARRAY CHARACTER
+;          (548)) perform operation and update stx to reference the next state.
+;   
+;   ex:
+;   
+;    ; equal to mvb but with cnd warnings for cnd/all conditions
+;    (cnd/bind-warn (val cnd) ; result of itr/n, and conditions if any
+;       ... {1006CDE80F}>
 ;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
 ;         `(HANDLER-CASE
 ;           (STM:MVB (,STM::NXT ,STM::VAL ,STM::E*) (,STM::OPR ,STM::STX ,@REST)
 ;                    (SETF #) (VALUES ,STM::VAL ,STM::E*))
-;           (STM:CND/HALT-OPERATION (,STM::E) (VALUES NIL ,STM::E)))))
+;           (STM:CND/DISCARD-OPERATION (,STM::E) (VALUES NIL ,STM::E)))))
 ; --> EVAL-WHEN SB-C::%DEFMACRO SB-C::%DEFMACRO SB-INT:NAMED-LAMBDA FUNCTION 
 ; --> SB-INT:NAMED-DS-BIND SB-INT:BINDING* 
 ; ==>
@@ -103,28 +95,44 @@ To load "stm":
 ;              (NULL STM::BODY))
 ;     (BLOCK STM:MUTATE!
 ;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
-;         `(HANDLER-CASE (STM:MVB # # # #) (STM:CND/HALT-OPERATION # #)))))
+;         `(HANDLER-CASE (STM:MVB # # # #) (STM:CND/DISCARD-OPERATION # #)))))
 ; 
 ; caught STYLE-WARNING:
 ;   The variable BODY is defined but never used.
+
+
+; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/pre-stm-tmp5GEXGEG5.fasl
+; compilation finished in 0:00:00.015
+WARNING:
+   Lisp compilation had style-warnings while
+   compiling #<CL-SOURCE-FILE "stm" "pre-stm">
+; compiling file "/data/x/stm/src/docs.lisp" (written 03 NOV 2024 04:54:58 PM):
+.
+; file: /data/x/stm/src/docs.lisp
+; in: DEFVAR *DOCSTRING-MAP*
+;     (LIST)
+; 
+; note: deleting unreachable code
+
+
+; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/docs-tmpAR3FSGEY.fasl
+; compilation finished in 0:00:00.017
+; compiling file "/data/x/stm/src/stm.lisp" (written 04 NOV 2024 10:02:57 PM):
 ..
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/stm-tmpJAIDFZTC.fasl
-; compilation finished in 0:00:00.028
-WARNING:
-   Lisp compilation had style-warnings while
-   compiling #<CL-SOURCE-FILE "stm" "stm">
+; compilation finished in 0:00:00.027
 ; 
 ; compilation unit finished
 ;   caught 2 STYLE-WARNING conditions
 ;   printed 1 note
 
 Evaluation took:
-  0.112 seconds of real time
-  0.112183 seconds of total run time (0.077486 user, 0.034697 system)
-  100.00% CPU
-  460 forms interpreted
-  723 lambdas converted
-  476,775,540 processor cycles
-  39,442,592 bytes consed
+  0.125 seconds of real time
+  0.125620 seconds of total run time (0.085785 user, 0.039835 system)
+  100.80% CPU
+  530 forms interpreted
+  844 lambdas converted
+  533,875,820 processor cycles
+  44,728,976 bytes consed
   
