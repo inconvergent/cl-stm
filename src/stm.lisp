@@ -2,16 +2,21 @@
 
 (defmacro stx/lambda ((name arg vfx) &body expr)
   (with-gensyms (v nxt act)
-    `(labels ((,#2=(lqn:sym! :stx/ name ) (&optional ,act) ; stx
-       (let ((,arg (funcall ,vfx)))
-         (multiple-value-bind (,v ,nxt) (progn ,@expr) ; expr returns v, nxt
-           (cond ((and ,nxt (functionp ,nxt))
-                  (values ,nxt #1=(funcall (the function (or ,act *act*)) ,v
-                                           ,(lqn:kw! name))))
-                 (,nxt (values nil #1#)) ; last value, no more stx
-                 (t (values nil nil)))))))
-             #',#2#
-             ))) ; fin
+    (let ((stx-name (lqn:sym! :stx/ arg :/ name)))
+      `(labels
+         ((,stx-name (&optional ,act) ; stx
+                     ; (declare (ftype (function (t)
+                     ;                   (values t maybe-function)
+                     ;                   ) aa ,stx-name))
+              (let ((,arg (funcall ,vfx)))
+                (multiple-value-bind (,v ,nxt) (progn ,@expr) ; expr returns v, nxt
+                  ; (declare (maybe-function ,nxt))
+                  (cond ((functionp ,nxt)
+                         (values ,nxt #1=(funcall (the function (or ,act *act*))
+                                          ,v ,(lqn:kw! name))))
+                        (,nxt (values nil #1#)) ; last value, no more stx
+                        (t (values nil nil)))))))
+         #',stx-name))))
 
 (defun make-rule-label (name arg expr)
   "create rule label with name, argument and rule/condition."

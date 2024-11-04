@@ -6,12 +6,13 @@
 (deftype maybe-keyword () "null or keyword" `(or keyword null))
 (deftype maybe-cnd () "null or cnd/all" `(or cnd/all null))
 
-; (:report (lambda (c s) (format s "~&██{HALT ITR @ ~a}: ~a~&" (rule c) (msg c))))
 (define-condition cnd/all (condition)
-  ((rule :initarg :rule :reader cnd/rule)
-   (flag :initarg :flag :reader cnd/flag)
-   (obj  :initarg :obj  :reader cnd/obj)
-   (msg  :initarg :msg  :reader cnd/msg))
+  ((rule :initarg :rule :reader cnd/rule) (flag :initarg :flag :reader cnd/flag)
+   (obj  :initarg :obj  :reader cnd/obj)  (msg  :initarg :msg  :reader cnd/msg))
+  (:report (lambda (c s)
+             (format s "~&██ STM rule ~a signalled ~a w/ {~a}~%"
+                       (cnd/rule c) (type-of c) (cnd/flag c))
+             (when (cnd/msg c) (format s "██   msg: ~a~&" (cnd/msg c)))))
   (:documentation "all conditions to control STM flow."))
 
 (define-condition cnd/halt-itr (cnd/all) nil (:documentation "condition to halt ITR."))
@@ -77,9 +78,7 @@ CONDITIONS
   "(mv)bind val, cnd and warn if cnd is stm:cnd/all."
   `(mvb (,val ,cnd) ,expr
      (declare (maybe-cnd ,cnd))
-     (typecase cnd
-       (cnd/all (warn "~a~%    @: ~s / ~s~%  msg: ~a"
-                  cnd (cnd/rule cnd) (cnd/flag cnd) (cnd/msg cnd))))
+     (typecase cnd (cnd/all (warn "~a" cnd)))
      ,@body))
 
 (defun r/identity (v rule)
