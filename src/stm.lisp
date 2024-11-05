@@ -88,7 +88,7 @@ ACC/ITR & CONDITIONS
 
 (defmacro new (name expr)
   (declare (symbol name))
-  "new state with this rule and expression. see with-rules."
+  "new state with this rule and expression. see: with-rules."
   `(,name (later ,expr)))
 (abbrev ? new)
 
@@ -113,14 +113,14 @@ ACC/ITR & CONDITIONS
 
 (defun acc/all (stx &optional act (acc #'cons) res)
   (declare (optimize speed))
-  "accumulate all. see with-rules."
+  "accumulate all. see: with-rules."
   (cnd/ctx/exec-stx (stx act res ) (nxt val)
     (if nxt (acc/all nxt act acc (funcall acc val res))
             (values nil (funcall acc val res) nil))))
 
 (defun acc/n (stx &optional (n 1) act (acc #'cons) res)
   (declare (optimize speed))
-  "accumulate at most n times. see with-rules."
+  "accumulate at most n times. see: with-rules."
   (if (> n 0) (cnd/ctx/exec-stx (stx act res) (nxt val)
                 (if nxt (acc/n nxt (1- n) act acc (funcall acc val res))
                         (values nil (funcall acc val res) nil)))
@@ -128,7 +128,7 @@ ACC/ITR & CONDITIONS
 
 (defun acc/until (stx &optional (until #'identity) act (acc #'cons) res)
   (declare (optimize speed))
-  "accumulate until. see with-rules."
+  "accumulate until. see: with-rules."
   (cnd/ctx/exec-stx (stx act res) (nxt val)
     (cond ((not nxt) (values nil (funcall acc val res) nil))
           ((not (funcall until val))
@@ -138,16 +138,16 @@ ACC/ITR & CONDITIONS
 
 (defun itr/all (stx &optional act res) ; thinwrap
   (declare (optimize speed))
-  "iterate all. see with-rules."
+  "iterate all. see: with-rules."
   (acc/all stx act #'r/acc/val res))
 
 (defun itr/n (stx &optional (n 1) act res) ; thinwrap
   (declare (optimize speed))
-  "iterate at most n times. see with-rules."
+  "iterate at most n times. see: with-rules."
   (acc/n stx n act #'r/acc/val res))
 
 (defun itr/until (stx &optional (until #'identity) act res) ; thinwrap
   (declare (optimize speed))
-  "iterate until. see with-rules."
+  "iterate until. see: with-rules."
   (acc/until stx until act #'r/acc/val res))
 

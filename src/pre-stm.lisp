@@ -24,24 +24,10 @@
 (defun msg-or-nil (msg)
   (when msg (apply #'format nil msg)))
 
-(defun cnd/halt-itr (rule obj &optional flag &rest msg)
-  (declare (keyword rule) (maybe-keyword flag))
-  "halt itr/acc. see: with-rules."
-  (signal 'cnd/halt-itr
-          :rule rule :flag flag :obj obj :msg (msg-or-nil msg)))
-
-(defun cnd/stop-itr (rule obj &optional flag &rest msg)
-  (declare (keyword rule) (maybe-keyword flag))
-  "halt itr/acc and stop. see: with-rules."
-  (signal 'cnd/stop-itr
-          :rule rule :flag flag :obj obj :msg (msg-or-nil msg)))
-
-(defun cnd/discard-operation (rule obj &optional flag &rest msg)
-  (declare (keyword rule) (maybe-keyword flag))
-  "discard itr/acc/mutation. see: with-rules/mutate!"
-  (signal 'cnd/discard-operation
-          :rule rule :flag flag :obj obj :msg (msg-or-nil msg)))
-
+(defmacro cnd (cnd rule &optional obj flag &rest msg)
+  "signal any subtype of cnd/all w/metadata. use to halt/stop/discard any
+  itr/acc/mutation operation. see: with-rules/ mutate!"
+  `(signal ',cnd :rule ,rule :flag ,flag :obj ,obj :msg ,(msg-or-nil msg)))
 
 (defmacro later (expr)
   "wrap expression in (lambda () ...) to evaluate later."

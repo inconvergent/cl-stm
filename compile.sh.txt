@@ -9,16 +9,16 @@ To load "stm":
   Load 1 ASDF system:
     stm
 ; Loading "stm"
-; compiling file "/data/x/stm/src/packages.lisp" (written 04 NOV 2024 10:20:35 PM):
+; compiling file "/data/x/stm/src/packages.lisp" (written 05 NOV 2024 09:44:37 AM):
 [package stm]
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/packages-tmpGHU3ALSV.fasl
-; compilation finished in 0:00:00.000
+; compilation finished in 0:00:00.001
 ; compiling file "/data/x/stm/src/utils.lisp" (written 04 NOV 2024 10:20:35 PM):
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/utils-tmpAAURSO1.fasl
 ; compilation finished in 0:00:00.010
-; compiling file "/data/x/stm/src/pre-stm.lisp" (written 05 NOV 2024 09:15:31 AM):
+; compiling file "/data/x/stm/src/pre-stm.lisp" (written 05 NOV 2024 09:51:45 AM):
 .
 ; file: /data/x/stm/src/pre-stm.lisp
 ; in: DEFMACRO MUTATE!
@@ -32,7 +32,7 @@ To load "stm":
 ;   
 ;    ; equal to mvb but with cnd warnings for cnd/all conditions
 ;    (cnd/bind-warn (val cnd) ; result of itr/n, and conditions if any
-;       ... {1006D68C2F}>
+;       ... {1006C68AAF}>
 ;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
 ;         `(HANDLER-CASE
 ;           (STM:MVB (,STM::NXT ,STM::VAL ,STM::E*) (,STM::OPR ,STM::STX ,@REST)
@@ -72,7 +72,7 @@ To load "stm":
 ;   
 ;    ; equal to mvb but with cnd warnings for cnd/all conditions
 ;    (cnd/bind-warn (val cnd) ; result of itr/n, and conditions if any
-;       ... {1006D68C2F}>
+;       ... {1006C68AAF}>
 ;       (STM::WITH-GENSYMS (STM::NXT STM::VAL STM::E STM::E*)
 ;         `(HANDLER-CASE
 ;           (STM:MVB (,STM::NXT ,STM::VAL ,STM::E*) (,STM::OPR ,STM::STX ,@REST)
@@ -102,7 +102,7 @@ To load "stm":
 
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/pre-stm-tmp5GEXGEG5.fasl
-; compilation finished in 0:00:00.017
+; compilation finished in 0:00:00.014
 WARNING:
    Lisp compilation had style-warnings while
    compiling #<CL-SOURCE-FILE "stm" "pre-stm">
@@ -116,23 +116,23 @@ WARNING:
 
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/docs-tmpAR3FSGEY.fasl
-; compilation finished in 0:00:00.017
+; compilation finished in 0:00:00.018
 ; compiling file "/data/x/stm/src/stm.lisp" (written 05 NOV 2024 08:57:47 AM):
 ..
 
 ; wrote /home/anders/.cache/common-lisp/sbcl-2.4.4-linux-x64/data/x/stm/src/stm-tmpJAIDFZTC.fasl
-; compilation finished in 0:00:00.028
+; compilation finished in 0:00:00.027
 ; 
 ; compilation unit finished
 ;   caught 2 STYLE-WARNING conditions
 ;   printed 1 note
 
 Evaluation took:
-  0.126 seconds of real time
-  0.127118 seconds of total run time (0.087077 user, 0.040041 system)
-  100.79% CPU
-  530 forms interpreted
-  862 lambdas converted
-  540,220,432 processor cycles
-  45,217,264 bytes consed
+  0.124 seconds of real time
+  0.124839 seconds of total run time (0.080899 user, 0.043940 system)
+  100.81% CPU
+  521 forms interpreted
+  846 lambdas converted
+  530,537,742 processor cycles
+  44,768,608 bytes consed
   

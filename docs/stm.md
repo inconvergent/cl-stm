@@ -42,7 +42,7 @@
  ;                  (VALUES (OR NULL FUNCTION) T (OR STM:CND/ALL NULL)
  ;                          &OPTIONAL))
  ;   Documentation:
- ;     accumulate all. see with-rules.
+ ;     accumulate all. see: with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
 ```
@@ -61,7 +61,7 @@
  ;                  (VALUES (OR NULL FUNCTION) T (OR STM:CND/ALL NULL)
  ;                          &OPTIONAL))
  ;   Documentation:
- ;     accumulate at most n times. see with-rules.
+ ;     accumulate at most n times. see: with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
 ```
@@ -81,8 +81,22 @@
  ;                  (VALUES (OR NULL FUNCTION) T (OR STM:CND/ALL NULL)
  ;                          &OPTIONAL))
  ;   Documentation:
- ;     accumulate until. see with-rules.
+ ;     accumulate until. see: with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp
+ ; 
+```
+
+## `stm:cnd`
+```
+ ; STM:CND
+ ;   [symbol]
+ ; 
+ ; CND names a macro:
+ ;   Lambda-list: (CND RULE &OPTIONAL OBJ FLAG &REST MSG)
+ ;   Documentation:
+ ;     signal any subtype of cnd/all w/metadata. use to halt/stop/discard any
+ ;       itr/acc/mutation operation. see: with-rules/ mutate!
+ ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
 ```
 
@@ -130,17 +144,10 @@
 
 ## `stm:cnd/discard-operation`
 ```
+:missing:
+
  ; STM:CND/DISCARD-OPERATION
  ;   [symbol]
- ; 
- ; CND/DISCARD-OPERATION names a compiled function:
- ;   Lambda-list: (RULE OBJ &OPTIONAL FLAG &REST MSG)
- ;   Derived type: (FUNCTION
- ;                  (KEYWORD T &OPTIONAL (OR KEYWORD NULL) &REST T)
- ;                  (VALUES NULL &OPTIONAL))
- ;   Documentation:
- ;     discard itr/acc/mutation. see: with-rules/mutate!
- ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
  ; CND/DISCARD-OPERATION names the condition-class #<SB-PCL::CONDITION-CLASS STM:CND/DISCARD-OPERATION>:
  ;   Documentation:
@@ -171,17 +178,10 @@
 
 ## `stm:cnd/halt-itr`
 ```
+:missing:
+
  ; STM:CND/HALT-ITR
  ;   [symbol]
- ; 
- ; CND/HALT-ITR names a compiled function:
- ;   Lambda-list: (RULE OBJ &OPTIONAL FLAG &REST MSG)
- ;   Derived type: (FUNCTION
- ;                  (KEYWORD T &OPTIONAL (OR KEYWORD NULL) &REST T)
- ;                  (VALUES NULL &OPTIONAL))
- ;   Documentation:
- ;     halt itr/acc. see: with-rules.
- ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
  ; CND/HALT-ITR names the condition-class #<SB-PCL::CONDITION-CLASS STM:CND/HALT-ITR>:
  ;   Documentation:
@@ -228,17 +228,10 @@
 
 ## `stm:cnd/stop-itr`
 ```
+:missing:
+
  ; STM:CND/STOP-ITR
  ;   [symbol]
- ; 
- ; CND/STOP-ITR names a compiled function:
- ;   Lambda-list: (RULE OBJ &OPTIONAL FLAG &REST MSG)
- ;   Derived type: (FUNCTION
- ;                  (KEYWORD T &OPTIONAL (OR KEYWORD NULL) &REST T)
- ;                  (VALUES NULL &OPTIONAL))
- ;   Documentation:
- ;     halt itr/acc and stop. see: with-rules.
- ;   Source file: /data/x/stm/src/pre-stm.lisp
  ; 
  ; CND/STOP-ITR names the condition-class #<SB-PCL::CONDITION-CLASS STM:CND/STOP-ITR>:
  ;   Documentation:
@@ -276,7 +269,7 @@
  ;                   (VALUES &OPTIONAL (OR NULL FUNCTION) T
  ;                           (OR STM:CND/ALL NULL) &REST T))
  ;   Documentation:
- ;     iterate all. see with-rules.
+ ;     iterate all. see: with-rules.
  ;   Inline proclamation: INLINE (inline expansion available)
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
@@ -293,7 +286,7 @@
  ;                   (VALUES &OPTIONAL (OR NULL FUNCTION) T
  ;                           (OR STM:CND/ALL NULL) &REST T))
  ;   Documentation:
- ;     iterate at most n times. see with-rules.
+ ;     iterate at most n times. see: with-rules.
  ;   Inline proclamation: INLINE (inline expansion available)
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
@@ -310,7 +303,7 @@
  ;                   (VALUES &OPTIONAL (OR NULL FUNCTION) T
  ;                           (OR STM:CND/ALL NULL) &REST T))
  ;   Documentation:
- ;     iterate until. see with-rules.
+ ;     iterate until. see: with-rules.
  ;   Inline proclamation: INLINE (inline expansion available)
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
@@ -425,7 +418,7 @@
  ; NEW names a macro:
  ;   Lambda-list: (NAME EXPR)
  ;   Documentation:
- ;     new state with this rule and expression. see with-rules.
+ ;     new state with this rule and expression. see: with-rules.
  ;   Source file: /data/x/stm/src/stm.lisp
  ; 
 ```
