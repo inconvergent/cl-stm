@@ -1,15 +1,20 @@
 (in-package #:stm)
 
-(defmacro stx/lambda ((name arg vfx) &body expr)
-  (with-gensyms (v nxt act)
-    (let ((stx-name (lqn:sym! :stx/ arg :/ name)))
+; TODO: override old
+(defun /repl-arg (expr new &optional (old '$))
+  ; (print (lqn:qry expr (?txpr (equal _ old) (progn new))))
+  (subst new old expr))
+
+(defmacro stx/lambda ((name vfx) &body expr)
+  (with-gensyms (v nxt act arg)
+    (let ((stx-name (lqn:sym! :stx name)))
       `(labels
          ((,stx-name (&optional ,act) ; stx
                      ; (declare (ftype (function (t)
                      ;                   (values t maybe-function)
                      ;                   ) aa ,stx-name))
               (let ((,arg (funcall ,vfx)))
-                (multiple-value-bind (,v ,nxt) (progn ,@expr) ; expr returns v, nxt
+                (multiple-value-bind (,v ,nxt) (progn ,@(/repl-arg expr arg)) ; expr returns v, nxt
                   ; (declare (maybe-function ,nxt))
                   (cond ((functionp ,nxt)
                          (values ,nxt #1=(funcall (the function (or ,act *act*))
@@ -18,13 +23,13 @@
                         (t (values nil nil)))))))
          #',stx-name))))
 
-(defun make-rule-label (name arg expr)
+(defun make-rule-label (name expr)
   "create rule label with name, argument and rule/condition."
-  (declare (symbol name arg))
+  (declare (symbol name))
   (with-gensyms (vfx)
     `((,name (,vfx)
        (declare (function ,vfx))
-       (stx/lambda (,name ,arg ,vfx) ,expr)))))
+       (stx/lambda (,name ,vfx) ,expr)))))
 
 
 (defmacro with-rules (rules &body body)
@@ -32,15 +37,26 @@
   "
 STATE MACHINE CONTEXT WITH RULES/STATES.
 
+Here is an example that implements a state machine that flips between
+  stats ping and pong, with corresponding behaviour.
+
 ex:
 
   ; (with-rules
-  ;   ((ping l (values l (new pong (list (1+ (cadr l)) :pong))))
-  ;    (pong l (values l (new ping (list :ping (1+ (car l)))))))
+  ;   ((ping (values $ (? pong (list (1+ (cadr $)) :pong))))
+  ;    (pong (values $ (? ping (list :ping (1+ (car $)))))))
 
-  ;   (let* ((sm0 (new ping `(:ping 0)))  ; initial value. not evaluated here
+  ;   (let* ((sm0 (? ping `(:ping 0)))  ; initial value. not evaluated here
   ;          (sm3 (itr/n sm0 3 #'princ))) ; eval & print 3 ping-pongs
   ;     (itr/n sm3 11 #'print)))          ; eval & print the next 11
+
+
+  TODO: fix intro/description
+
+a rule is defined as (name arg expr) where name is the name of the rule, arg is
+  a symbol representing the current value and expr is an expression that
+  must return
+  (values current-value next-rule)
 
 ITR / ACC - iterators and accumulators
 
@@ -114,7 +130,7 @@ ACC/ITR & CONDITIONS
 (defun acc/all (stx &optional act (acc #'cons) res)
   (declare (optimize speed))
   "accumulate all. see: with-rules."
-  (cnd/ctx/exec-stx (stx act res ) (nxt val)
+  (cnd/ctx/exec-stx (stx act res) (nxt val)
     (if nxt (acc/all nxt act acc (funcall acc val res))
             (values nil (funcall acc val res) nil))))
 

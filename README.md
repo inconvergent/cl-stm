@@ -14,3 +14,5 @@
 ```
 
 examples in [/ex](/ex).
+
+symbol documentation in [/docs/stm.md](/docs/stm/md).
