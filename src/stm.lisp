@@ -15,7 +15,7 @@
                      ;                   ) aa ,stx-name))
               (let ((,arg (funcall ,vfx)))
                 (multiple-value-bind (,v ,nxt) (progn ,@(/repl-arg expr arg)) ; expr returns v, nxt
-                  ; (declare (maybe-function ,nxt))
+                  ; (declare (maybe-function ,nxt)) ; not true
                   (cond ((functionp ,nxt)
                          (values ,nxt #1=(funcall (the function (or ,act *act*))
                                           ,v ,(lqn:kw! name))))
