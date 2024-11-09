@@ -1,16 +1,21 @@
 (in-package #:stm)
 
-(defmacro stx/lambda ((name arg vfx) &body expr)
-  (with-gensyms (v nxt act)
-    (let ((stx-name (lqn:sym! :stx/ arg :/ name)))
+; TODO: override old
+(defun /repl-arg (expr new &optional (old '$))
+  ; (print (lqn:qry expr (?txpr (equal _ old) (progn new))))
+  (subst new old expr))
+
+(defmacro stx/lambda ((name vfx) &body expr)
+  (with-gensyms (v nxt act arg)
+    (let ((stx-name (lqn:sym! :stx/ name)))
       `(labels
          ((,stx-name (&optional ,act) ; stx
                      ; (declare (ftype (function (t)
                      ;                   (values t maybe-function)
                      ;                   ) aa ,stx-name))
               (let ((,arg (funcall ,vfx)))
-                (multiple-value-bind (,v ,nxt) (progn ,@expr) ; expr returns v, nxt
-                  ; (declare (maybe-function ,nxt))
+                (multiple-value-bind (,v ,nxt) (progn ,@(/repl-arg expr arg)) ; expr returns v, nxt
+                  ; (declare (maybe-function ,nxt)) ; not true
                   (cond ((functionp ,nxt)
                          (values ,nxt #1=(funcall (the function (or ,act *act*))
                                           ,v ,(lqn:kw! name))))
@@ -18,13 +23,13 @@
                         (t (values nil nil)))))))
          #',stx-name))))
 
-(defun make-rule-label (name arg expr)
+(defun make-rule-label (name expr)
   "create rule label with name, argument and rule/condition."
-  (declare (symbol name arg))
+  (declare (symbol name))
   (with-gensyms (vfx)
     `((,name (,vfx)
        (declare (function ,vfx))
-       (stx/lambda (,name ,arg ,vfx) ,expr)))))
+       (stx/lambda (,name ,vfx) ,expr)))))
 
 
 (defmacro with-rules (rules &body body)
@@ -32,15 +37,26 @@
   "
 STATE MACHINE CONTEXT WITH RULES/STATES.
 
+Here is an example that implements a state machine that flips between
+  stats ping and pong, with corresponding behaviour.
+
 ex:
 
   ; (with-rules
-  ;   ((ping l (values l (new pong (list (1+ (cadr l)) :pong))))
-  ;    (pong l (values l (new ping (list :ping (1+ (car l)))))))
+  ;   ((ping (values $ (? pong (list (1+ (cadr $)) :pong))))
+  ;    (pong (values $ (? ping (list :ping (1+ (car $)))))))
 
-  ;   (let* ((sm0 (new ping `(:ping 0)))  ; initial value. not evaluated here
+  ;   (let* ((sm0 (? ping `(:ping 0)))  ; initial value. not evaluated here
   ;          (sm3 (itr/n sm0 3 #'princ))) ; eval & print 3 ping-pongs
   ;     (itr/n sm3 11 #'print)))          ; eval & print the next 11
+
+
+  TODO: fix intro/description
+
+a rule is defined as (name arg expr) where name is the name of the rule, arg is
+  a symbol representing the current value and expr is an expression that
+  must return
+  (values current-value next-rule)
 
 ITR / ACC - iterators and accumulators
 
@@ -92,7 +108,7 @@ ACC/ITR & CONDITIONS
   `(,name (later ,expr)))
 (abbrev ? new)
 
-(defmacro cnd/ctx/exec-stx ((stx act res) (nxt val) &body body)
+(defmacro cnd/exec-stx ((stx act res) (nxt val) &body body)
   (declare (symbol stx act res nxt val))
   (with-gensyms (cnd)
     `(handler-case (mvb (,nxt ,val) (funcall ,stx ,act)
@@ -114,14 +130,14 @@ ACC/ITR & CONDITIONS
 (defun acc/all (stx &optional act (acc #'cons) res)
   (declare (optimize speed))
   "accumulate all. see: with-rules."
-  (cnd/ctx/exec-stx (stx act res ) (nxt val)
+  (cnd/exec-stx (stx act res) (nxt val)
     (if nxt (acc/all nxt act acc (funcall acc val res))
             (values nil (funcall acc val res) nil))))
 
 (defun acc/n (stx &optional (n 1) act (acc #'cons) res)
   (declare (optimize speed))
   "accumulate at most n times. see: with-rules."
-  (if (> n 0) (cnd/ctx/exec-stx (stx act res) (nxt val)
+  (if (> n 0) (cnd/exec-stx (stx act res) (nxt val)
                 (if nxt (acc/n nxt (1- n) act acc (funcall acc val res))
                         (values nil (funcall acc val res) nil)))
               (values stx res nil)))
@@ -129,7 +145,7 @@ ACC/ITR & CONDITIONS
 (defun acc/until (stx &optional (until #'identity) act (acc #'cons) res)
   (declare (optimize speed))
   "accumulate until. see: with-rules."
-  (cnd/ctx/exec-stx (stx act res) (nxt val)
+  (cnd/exec-stx (stx act res) (nxt val)
     (cond ((not nxt) (values nil (funcall acc val res) nil))
           ((not (funcall until val))
            (acc/until nxt until act acc (funcall acc val res)))

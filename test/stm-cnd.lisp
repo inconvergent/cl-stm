@@ -15,8 +15,8 @@
 
 (subtest "test conditions"
 
-  (stm:with-rules ((ping o (values o (stm:? pong (inc-state o :pong 1))))
-                   (pong o (values o (stm:? ping (inc-state o :ping 3)))))
+  (stm:with-rules ((ping (values stm:$ (stm:? pong (inc-state stm:$ :pong 1))))
+                   (pong (values stm:$ (stm:? ping (inc-state stm:$ :ping 3)))))
 
     (let ((sfx (stm:? ping (new-state :ping))))
 
@@ -24,12 +24,12 @@
                (proc-item-10 (o rule)
                  (declare (keyword rule))
                  (if (> (val o) 5)
-                     (stm:cnd stm:cnd/halt-itr rule o :flag-10 "val is larger than 10" o))
+                     (stm:cnd stm:cnd/halt-itr rule :flag-10 o "val is larger than 10" o))
                 (ping-list o))
                (proc-item-20 (o rule)
                  (declare (keyword rule))
                  (if (> (val o) 10)
-                     (stm:cnd stm:cnd/discard-operation rule o :flag-20 "val is larger than 20"))
+                     (stm:cnd stm:cnd/discard-operation rule :flag-20 o "val is larger than 20"))
                  (ping-list o)))
 
         (is (mvb (a b c) (stm:itr/n sfx 30)
@@ -89,8 +89,8 @@
 
 (subtest "test conditions 2"
 
-  (stm:with-rules ((ping o (values o (stm:? pong (inc-state o :pong 1))))
-                   (pong o (values o (stm:? ping (inc-state o :ping 3)))))
+  (stm:with-rules ((ping (values stm:$ (stm:? pong (inc-state stm:$ :pong 1))))
+                   (pong (values stm:$ (stm:? ping (inc-state stm:$ :ping 3)))))
 
     (let ((sfx (stm:? ping (new-state :ping))))
 
@@ -98,7 +98,7 @@
                (proc-stop (o rule)
                  (declare (keyword rule))
                  (if (> (val o) 5)
-                     (stm:cnd stm:cnd/stop-itr rule o :stop))
+                     (stm:cnd stm:cnd/stop-itr rule :stop o))
                  (ping-list o)))
         (stm:mvb (val cnd)
           (stm:mutate! (stm:itr/n sfx 100 #'proc-stop))

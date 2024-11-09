@@ -7,11 +7,11 @@
 (deftype maybe-cnd () "null or cnd/all" `(or cnd/all null))
 
 (define-condition cnd/all (condition)
-  ((rule :initarg :rule :reader cnd/rule) (flag :initarg :flag :reader cnd/flag)
+  ((ctx :initarg :ctx :reader cnd/ctx) (flag :initarg :flag :reader cnd/flag)
    (obj  :initarg :obj  :reader cnd/obj)  (msg  :initarg :msg  :reader cnd/msg))
   (:report (lambda (c s)
-             (format s "~&██ STM rule ~a signalled ~a w/ {~a}~%"
-                       (cnd/rule c) (type-of c) (cnd/flag c))
+             (format s "~&██ STM (~a) signalled ~a w/ {~a}~%"
+                       (cnd/ctx c) (type-of c) (cnd/flag c))
              (when (cnd/msg c) (format s "██   msg: ~a~&" (cnd/msg c)))))
   (:documentation "all conditions to control STM flow."))
 
@@ -24,10 +24,10 @@
 (defun msg-or-nil (msg)
   (when msg (apply #'format nil msg)))
 
-(defmacro cnd (cnd rule &optional obj flag &rest msg)
+(defmacro cnd (cnd ctx &optional (flag ctx) obj &rest msg)
   "signal any subtype of cnd/all w/metadata. use to halt/stop/discard any
   itr/acc/mutation operation. see: with-rules/ mutate!"
-  `(signal ',cnd :rule ,rule :flag ,flag :obj ,obj :msg ,(msg-or-nil msg)))
+  `(signal ',cnd :ctx ,ctx :flag ,flag :obj ,obj :msg ,(msg-or-nil msg)))
 
 (defmacro later (expr)
   "wrap expression in (lambda () ...) to evaluate later."
@@ -86,10 +86,11 @@ CONDITIONS
   "print rule and value. return v."
   (format t "~&; {~a}: ~a~&" rule v) v)
 
+; TODO: update desc
 (declaim (function *act*))
 (defvar *act* #'r/identity
-  "function that is called for each iteration. requires
-two arguments. the first argument is the value. must return the desired return
-value for each iteration.
+  "default function called for any operation that accepts an act argument. act is
+  called for eachiteration.
+  act requires two arguments. the first argument is the value.
 the second is the (keyword) name of the current rule.")
 

@@ -5,7 +5,7 @@
 (defun r/princ (v r) (princ r) (princ v))
 
 (subtest "test state machine"
-   (stm:with-rules ((rulex i (cond ((< i 4)  (values i (stm:new rulex (1+ i)))))))
+   (stm:with-rules ((rulex (cond ((< stm:$ 4)  (values stm:$ (stm:new rulex (1+ stm:$)))))))
      (let ((stm:*act* (lambda (v r) (lqn:out "hi~a ~a|>" r v))))
        (is (lqn:stdstr (let ((gg (stm:new rulex 0)))
                          (stm:itr/all gg #'r/princ)
@@ -13,7 +13,7 @@
            "RULEX0RULEX1RULEX2RULEX3hiRULEX 0|>hiRULEX 1|>hiRULEX 2|>hiRULEX 3|>")))
 
   (stm:with-rules
-    ((gx i (values i (if (< i 20) (stm:new gx (1+ i)) t))))
+    ((gx (values stm:$ (if (< stm:$ 20) (stm:new gx (1+ stm:$)) t))))
       (let* ((gg (stm:new gx 0)))
         (mvb (g v) (stm:itr/until gg (lambda (i) (= i 10)))  (is (list (functionp g) v) '(t 10)))
         (mvb (g v) (stm:itr/until gg (lambda (i) (= i 100))) (is (list (functionp g) v) '(nil 20)))
@@ -29,17 +29,17 @@
              (is (list (functionp g) v) '(t 5)))))
 
    (stm:with-rules
-    ((rx i (values i (stm:new rx (progn (princ :/exec->) (1+ i))))))
+    ((rx (values stm:$ (stm:new rx (progn (princ :/exec->) (1+ stm:$))))))
     (is (lqn:stdstr (let ((gg (stm:new rx 0)))
                       (stm:itr/n gg 3 #'r/princ)))
         "RX0/EXEC->RX1/EXEC->RX2")))
 
 (subtest "test state machine 2"
   (stm:with-rules
-    ((gen-a i (cond ((< i 4)  (values i (stm:new gen-a (1+ i))))
-                    ((< i 14) (values i (stm:new gen-a (+ 3 i))))))
-     (gen-b l (cond ((and l (cdr l)) (values (car l) (stm:new gen-b (cdr l))))
-                    ((car l)         (values (car l) t)))))
+    ((gen-a (cond ((< stm:$ 4)  (values stm:$ (stm:new gen-a (1+ stm:$))))
+                  ((< stm:$ 14) (values stm:$ (stm:new gen-a (+ 3 stm:$))))))
+     (gen-b (cond ((and stm:$ (cdr stm:$)) (values (car stm:$) (stm:new gen-b (cdr stm:$))))
+                  ((car stm:$)         (values (car stm:$) t)))))
     (is (lqn:stdstr
       (let* ((gint (stm:new gen-a 0))
              (gintb1 (stm:itr/n gint   3 (lambda (s r) (lqn:out "~a hi ~a" r s))))
@@ -52,7 +52,7 @@
 :-- GEN-A oh no 7.GEN-A oh no 10.GEN-A oh no 13."))
 
   (stm:with-rules
-    ((gx i (values i (if (< i 4) (stm:new gx (1+ i)) t))))
+    ((gx (values stm:$ (if (< stm:$ 4) (stm:new gx (1+ stm:$)) t))))
     (let* ((gg (stm:new gx 0)))
      (is (mvl (stm:acc/all gg)) '(nil (4 3 2 1 0) nil))
      (is (mvb (g* val) (stm:acc/n gg 2) (list val (functionp g*))) '((1 0) t))
@@ -78,9 +78,9 @@
             (t (lqn:out "~%~a" #4#))))
 
 (subtest "test fizzbuzz state machine"
-  (stm:with-rules ((fizzbuzz l
-                     (values l (stm:new fizzbuzz
-                                 (which? (1+ (car l)))))))
+  (stm:with-rules ((fizzbuzz
+                     (values stm:$ (stm:new fizzbuzz
+                                 (which? (1+ (car stm:$)))))))
 
     (let ((gg (stm:new fizzbuzz (which? 1))))
       (is (lqn:stdstr

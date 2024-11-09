@@ -18,8 +18,7 @@
             (t (lqn:out "~%~a" #4#))))
 
 (defun main ()
-  (with-rules ((fizzbuzz l
-                     (values l (? fizzbuzz (which? (1+ (car l)))))))
+  (with-rules ((fizzbuzz (values $ (? fizzbuzz (which? (1+ (car $)))))))
 
     (let* ((sm (? fizzbuzz (which? 1)))
            (sm10 (itr/n sm 10 #'fizz-print)))

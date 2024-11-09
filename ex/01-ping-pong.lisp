@@ -7,8 +7,8 @@
 
 (defun main ()
 
-  (with-rules ((ping l (values l (? pong (list (1+ (cadr l)) :pong))))
-               (pong l (values l (? ping (list :ping (1+ (car l)))))))
+  (with-rules ((ping (values $ (? pong (list (1+ (cadr $)) :pong))))
+               (pong (values $ (? ping (list :ping (1+ (car $)))))))
 
     (let* ((sm (? ping (list :ping 0)))
            (sm10 (itr/n sm 3 #'r/print*)))

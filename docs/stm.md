@@ -1,3 +1,12 @@
+## `stm:$`
+```
+:missing:
+
+ ; STM:$
+ ;   [symbol]
+ ; 
+```
+
 ## `stm:*act*`
 ```
  ; STM:*ACT*
@@ -7,9 +16,9 @@
  ;   Declared type: FUNCTION
  ;   Value: #<FUNCTION R/IDENTITY>
  ;   Documentation:
- ;     function that is called for each iteration. requires
- ;     two arguments. the first argument is the value. must return the desired return
- ;     value for each iteration.
+ ;     default function called for any operation that accepts an act argument. act is
+ ;       called for eachiteration.
+ ;       act requires two arguments. the first argument is the value.
  ;     the second is the (keyword) name of the current rule.
  ; 
 ```
@@ -92,7 +101,7 @@
  ;   [symbol]
  ; 
  ; CND names a macro:
- ;   Lambda-list: (CND RULE &OPTIONAL OBJ FLAG &REST MSG)
+ ;   Lambda-list: (CND CTX &OPTIONAL (FLAG CTX) OBJ &REST MSG)
  ;   Documentation:
  ;     signal any subtype of cnd/all w/metadata. use to halt/stop/discard any
  ;       itr/acc/mutation operation. see: with-rules/ mutate!
@@ -114,9 +123,9 @@
  ;   Direct superclasses: CONDITION
  ;   Direct subclasses: CND/DISCARD-OPERATION, CND/STOP-ITR, CND/HALT-ITR
  ;   Direct slots:
- ;     RULE
- ;       Initargs: :RULE
- ;       Readers: CND/RULE
+ ;     CTX
+ ;       Initargs: :CTX
+ ;       Readers: CND/CTX
  ;     FLAG
  ;       Initargs: :FLAG
  ;       Readers: CND/FLAG
@@ -139,6 +148,22 @@
  ;   Documentation:
  ;     (mv)bind val, cnd and warn if cnd is stm:cnd/all.
  ;   Source file: /data/x/stm/src/pre-stm.lisp
+ ; 
+```
+
+## `stm:cnd/ctx`
+```
+:missing:
+
+ ; STM:CND/CTX
+ ;   [symbol]
+ ; 
+ ; CND/CTX names a generic function:
+ ;   Lambda-list: (CONDITION)
+ ;   Derived type: (FUNCTION (T) *)
+ ;   Method-combination: STANDARD
+ ;   Methods:
+ ;     (CND/CTX (CND/ALL))
  ; 
 ```
 
@@ -207,22 +232,6 @@
  ;   Method-combination: STANDARD
  ;   Methods:
  ;     (CND/MSG (CND/ALL))
- ; 
-```
-
-## `stm:cnd/rule`
-```
-:missing:
-
- ; STM:CND/RULE
- ;   [symbol]
- ; 
- ; CND/RULE names a generic function:
- ;   Lambda-list: (CONDITION)
- ;   Derived type: (FUNCTION (T) *)
- ;   Method-combination: STANDARD
- ;   Methods:
- ;     (CND/RULE (CND/ALL))
  ; 
 ```
 
@@ -494,15 +503,26 @@
  ;     
  ;     STATE MACHINE CONTEXT WITH RULES/STATES.
  ;     
+ ;     Here is an example that implements a state machine that flips between
+ ;       stats ping and pong, with corresponding behaviour.
+ ;     
  ;     ex:
  ;     
  ;       ; (with-rules
- ;       ;   ((ping l (values l (new pong (list (1+ (cadr l)) :pong))))
- ;       ;    (pong l (values l (new ping (list :ping (1+ (car l)))))))
+ ;       ;   ((ping (values $ (? pong (list (1+ (cadr $)) :pong))))
+ ;       ;    (pong (values $ (? ping (list :ping (1+ (car $)))))))
  ;     
- ;       ;   (let* ((sm0 (new ping `(:ping 0)))  ; initial value. not evaluated here
+ ;       ;   (let* ((sm0 (? ping `(:ping 0)))  ; initial value. not evaluated here
  ;       ;          (sm3 (itr/n sm0 3 #'princ))) ; eval & print 3 ping-pongs
  ;       ;     (itr/n sm3 11 #'print)))          ; eval & print the next 11
+ ;     
+ ;     
+ ;       TODO: fix intro/description
+ ;     
+ ;     a rule is defined as (name arg expr) where name is the name of the rule, arg is
+ ;       a symbol representing the current value and expr is an expression that
+ ;       must return
+ ;       (values current-value next-rule)
  ;     
  ;     ITR / ACC - iterators and accumulators
  ;     
