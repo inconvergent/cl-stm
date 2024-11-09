@@ -7,7 +7,7 @@
 
 (defmacro stx/lambda ((name vfx) &body expr)
   (with-gensyms (v nxt act arg)
-    (let ((stx-name (lqn:sym! :stx name)))
+    (let ((stx-name (lqn:sym! :stx/ name)))
       `(labels
          ((,stx-name (&optional ,act) ; stx
                      ; (declare (ftype (function (t)
@@ -108,7 +108,7 @@ ACC/ITR & CONDITIONS
   `(,name (later ,expr)))
 (abbrev ? new)
 
-(defmacro cnd/ctx/exec-stx ((stx act res) (nxt val) &body body)
+(defmacro cnd/exec-stx ((stx act res) (nxt val) &body body)
   (declare (symbol stx act res nxt val))
   (with-gensyms (cnd)
     `(handler-case (mvb (,nxt ,val) (funcall ,stx ,act)
@@ -130,14 +130,14 @@ ACC/ITR & CONDITIONS
 (defun acc/all (stx &optional act (acc #'cons) res)
   (declare (optimize speed))
   "accumulate all. see: with-rules."
-  (cnd/ctx/exec-stx (stx act res) (nxt val)
+  (cnd/exec-stx (stx act res) (nxt val)
     (if nxt (acc/all nxt act acc (funcall acc val res))
             (values nil (funcall acc val res) nil))))
 
 (defun acc/n (stx &optional (n 1) act (acc #'cons) res)
   (declare (optimize speed))
   "accumulate at most n times. see: with-rules."
-  (if (> n 0) (cnd/ctx/exec-stx (stx act res) (nxt val)
+  (if (> n 0) (cnd/exec-stx (stx act res) (nxt val)
                 (if nxt (acc/n nxt (1- n) act acc (funcall acc val res))
                         (values nil (funcall acc val res) nil)))
               (values stx res nil)))
@@ -145,7 +145,7 @@ ACC/ITR & CONDITIONS
 (defun acc/until (stx &optional (until #'identity) act (acc #'cons) res)
   (declare (optimize speed))
   "accumulate until. see: with-rules."
-  (cnd/ctx/exec-stx (stx act res) (nxt val)
+  (cnd/exec-stx (stx act res) (nxt val)
     (cond ((not nxt) (values nil (funcall acc val res) nil))
           ((not (funcall until val))
            (acc/until nxt until act acc (funcall acc val res)))

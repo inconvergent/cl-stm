@@ -24,7 +24,7 @@
 (defun msg-or-nil (msg)
   (when msg (apply #'format nil msg)))
 
-(defmacro cnd (cnd ctx flag &optional obj &rest msg)
+(defmacro cnd (cnd ctx &optional (flag ctx) obj &rest msg)
   "signal any subtype of cnd/all w/metadata. use to halt/stop/discard any
   itr/acc/mutation operation. see: with-rules/ mutate!"
   `(signal ',cnd :ctx ,ctx :flag ,flag :obj ,obj :msg ,(msg-or-nil msg)))
@@ -86,10 +86,11 @@ CONDITIONS
   "print rule and value. return v."
   (format t "~&; {~a}: ~a~&" rule v) v)
 
+; TODO: update desc
 (declaim (function *act*))
 (defvar *act* #'r/identity
-  "function that is called for each iteration. requires
-two arguments. the first argument is the value. must return the desired return
-value for each iteration.
+  "default function called for any operation that accepts an act argument. act is
+  called for eachiteration.
+  act requires two arguments. the first argument is the value.
 the second is the (keyword) name of the current rule.")
 

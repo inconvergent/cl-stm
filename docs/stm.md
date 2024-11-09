@@ -16,9 +16,9 @@
  ;   Declared type: FUNCTION
  ;   Value: #<FUNCTION R/IDENTITY>
  ;   Documentation:
- ;     function that is called for each iteration. requires
- ;     two arguments. the first argument is the value. must return the desired return
- ;     value for each iteration.
+ ;     default function called for any operation that accepts an act argument. act is
+ ;       called for eachiteration.
+ ;       act requires two arguments. the first argument is the value.
  ;     the second is the (keyword) name of the current rule.
  ; 
 ```
@@ -101,7 +101,7 @@
  ;   [symbol]
  ; 
  ; CND names a macro:
- ;   Lambda-list: (CND CTX FLAG &OPTIONAL OBJ &REST MSG)
+ ;   Lambda-list: (CND CTX &OPTIONAL (FLAG CTX) OBJ &REST MSG)
  ;   Documentation:
  ;     signal any subtype of cnd/all w/metadata. use to halt/stop/discard any
  ;       itr/acc/mutation operation. see: with-rules/ mutate!
